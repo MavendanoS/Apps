@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mi Entrenamiento en Casa</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>💪 Mi Entrenamiento</h1>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-button active" data-tab="today">Hoy</button>
+            <button class="tab-button" data-tab="routines">Rutinas</button>
+            <button class="tab-button" data-tab="exercises">Ejercicios</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Today's Workout Tab -->
+            <div class="tab-content active" id="today-tab">
+                <div class="section-header">
+                    <h2>Entrenamiento de Hoy</h2>
+                    <button class="btn-primary" id="selectRoutineBtn">Seleccionar Rutina</button>
+                </div>
+
+                <div id="todayWorkout" class="workout-container">
+                    <div class="empty-state">
+                        <p>📋 No hay rutina seleccionada para hoy</p>
+                        <p class="empty-state-hint">Selecciona una rutina para comenzar</p>
+                    </div>
+                </div>
+
+                <div class="stats-container" id="statsContainer" style="display: none;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="completedCount">0</div>
+                        <div class="stat-label">Completados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="remainingCount">0</div>
+                        <div class="stat-label">Restantes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Routines Tab -->
+            <div class="tab-content" id="routines-tab">
+                <div class="section-header">
+                    <h2>Mis Rutinas</h2>
+                    <button class="btn-primary" id="createRoutineBtn">+ Nueva Rutina</button>
+                </div>
+
+                <div id="routinesList" class="routines-list">
+                    <!-- Routines will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Exercises Library Tab -->
+            <div class="tab-content" id="exercises-tab">
+                <div class="section-header">
+                    <h2>Biblioteca de Ejercicios</h2>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="cardio">Cardio</button>
+                    <button class="filter-btn" data-filter="fuerza">Fuerza</button>
+                    <button class="filter-btn" data-filter="flexibilidad">Flexibilidad</button>
+                </div>
+
+                <div id="exercisesList" class="exercises-list">
+                    <!-- Exercises will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Creating Routine -->
+    <div id="routineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Rutina</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="routineName">Nombre de la Rutina</label>
+                    <input type="text" id="routineName" placeholder="Ej: Entrenamiento Completo" class="input-field">
+                </div>
+
+                <div class="form-group">
+                    <label>Selecciona Ejercicios</label>
+                    <div id="exerciseSelector" class="exercise-selector">
+                        <!-- Exercise checkboxes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelRoutineBtn">Cancelar</button>
+                <button class="btn-primary" id="saveRoutineBtn">Guardar Rutina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Selecting Today's Routine -->
+    <div id="selectRoutineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Seleccionar Rutina para Hoy</h3>
+                <button class="close-btn" id="closeSelectModalBtn">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div id="routineSelector" class="routine-selector">
+                    <!-- Available routines will be loaded here -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelSelectBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
