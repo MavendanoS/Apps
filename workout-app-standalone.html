@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>💪 Mi Entrenamiento</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}:root{--primary-color:#4c6ef5;--primary-dark:#364fc7;--secondary-color:#51cf66;--danger-color:#ff6b6b;--background:#f8f9fa;--surface:#fff;--text-primary:#212529;--text-secondary:#6c757d;--border-color:#dee2e6;--shadow:0 2px 8px rgba(0,0,0,.1);--shadow-lg:0 4px 16px rgba(0,0,0,.15)}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:var(--background);color:var(--text-primary);line-height:1.6;overflow-x:hidden}.app-container{max-width:100%;min-height:100vh;display:flex;flex-direction:column}.header{background:linear-gradient(135deg,var(--primary-color) 0%,var(--primary-dark) 100%);color:#fff;padding:1.5rem 1rem 1rem;text-align:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}.header h1{font-size:1.5rem;margin-bottom:.5rem}.date-display{font-size:.9rem;opacity:.9}.nav-tabs{display:flex;background-color:var(--surface);box-shadow:var(--shadow);position:sticky;top:85px;z-index:99}.tab-button{flex:1;padding:1rem;border:none;background:transparent;color:var(--text-secondary);font-size:.95rem;font-weight:500;cursor:pointer;transition:all .3s ease;border-bottom:3px solid transparent;-webkit-tap-highlight-color:transparent}.tab-button.active{color:var(--primary-color);border-bottom-color:var(--primary-color)}.tab-button:active{background-color:var(--background)}.main-content{flex:1;padding:1rem 1rem 2rem}.tab-content{display:none;animation:fadeIn .3s ease}.tab-content.active{display:block}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}.section-header h2{font-size:1.5rem;color:var(--text-primary)}.btn-primary,.btn-secondary{padding:.75rem 1.5rem;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s ease;-webkit-tap-highlight-color:transparent;box-shadow:var(--shadow)}.btn-primary{background-color:var(--primary-color);color:#fff}.btn-primary:active{background-color:var(--primary-dark);transform:scale(.98)}.btn-secondary{background-color:var(--surface);color:var(--text-primary);border:1px solid var(--border-color)}.btn-secondary:active{background-color:var(--background)}.empty-state{text-align:center;padding:3rem 1rem;background-color:var(--surface);border-radius:12px;border:2px dashed var(--border-color)}.empty-state p{font-size:1.1rem;color:var(--text-secondary);margin-bottom:.5rem}.empty-state-hint{font-size:.9rem;color:var(--text-secondary);opacity:.7}.workout-container{margin-bottom:1.5rem}.exercise-item{background-color:var(--surface);border-radius:12px;padding:1rem;margin-bottom:.75rem;box-shadow:var(--shadow);transition:all .3s ease}.exercise-item.completed{opacity:.6;background-color:#e7f5ff}.exercise-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}.exercise-name{font-size:1.1rem;font-weight:600;color:var(--text-primary)}.exercise-details{display:flex;gap:1rem;margin-bottom:.75rem;color:var(--text-secondary);font-size:.9rem}.exercise-detail{display:flex;align-items:center;gap:.3rem}.complete-btn{width:100%;padding:.75rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .3s ease;-webkit-tap-highlight-color:transparent}.complete-btn:not(.completed){background-color:var(--secondary-color);color:#fff}.complete-btn.completed{background-color:var(--text-secondary);color:#fff}.complete-btn:active{transform:scale(.98)}.stats-container{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}.stat-card{background-color:var(--surface);border-radius:12px;padding:1.5rem;text-align:center;box-shadow:var(--shadow)}.stat-value{font-size:2rem;font-weight:700;color:var(--primary-color);margin-bottom:.25rem}.stat-label{font-size:.9rem;color:var(--text-secondary)}.routines-list{display:flex;flex-direction:column;gap:.75rem}.routine-card{background-color:var(--surface);border-radius:12px;padding:1rem;box-shadow:var(--shadow);cursor:pointer;transition:all .3s ease}.routine-card:active{transform:scale(.98);box-shadow:var(--shadow-lg)}.routine-name{font-size:1.1rem;font-weight:600;margin-bottom:.5rem;color:var(--text-primary)}.routine-info{display:flex;justify-content:space-between;align-items:center;color:var(--text-secondary);font-size:.9rem}.routine-actions{display:flex;gap:.5rem;margin-top:.75rem}.action-btn{flex:1;padding:.5rem;border:none;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .3s ease;-webkit-tap-highlight-color:transparent}.action-btn.use{background-color:var(--primary-color);color:#fff}.action-btn.delete{background-color:var(--danger-color);color:#fff}.action-btn:active{transform:scale(.95)}.filter-buttons{display:flex;gap:.5rem;margin-bottom:1rem;overflow-x:auto;-webkit-overflow-scrolling:touch}.filter-btn{padding:.5rem 1rem;border:2px solid var(--border-color);background-color:var(--surface);border-radius:20px;font-size:.9rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .3s ease;-webkit-tap-highlight-color:transparent}.filter-btn.active{background-color:var(--primary-color);color:#fff;border-color:var(--primary-color)}.filter-btn:active{transform:scale(.95)}.exercises-list{display:grid;gap:.75rem}.exercise-card{background-color:var(--surface);border-radius:12px;padding:1rem;box-shadow:var(--shadow)}.exercise-card-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:.5rem}.exercise-card-name{font-size:1.05rem;font-weight:600;color:var(--text-primary)}.exercise-category{background-color:var(--primary-color);color:#fff;padding:.25rem .75rem;border-radius:12px;font-size:.75rem;font-weight:600}.exercise-card-details{color:var(--text-secondary);font-size:.9rem}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);z-index:1000;animation:fadeIn .3s ease}.modal.active{display:flex;align-items:flex-end}.modal-content{background-color:var(--surface);width:100%;max-height:90vh;overflow-y:auto;border-radius:20px 20px 0 0;animation:slideUp .3s ease;display:flex;flex-direction:column}@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:1.5rem;border-bottom:1px solid var(--border-color)}.modal-header h3{font-size:1.3rem;color:var(--text-primary)}.close-btn{background:none;border:none;font-size:2rem;color:var(--text-secondary);cursor:pointer;line-height:1;-webkit-tap-highlight-color:transparent}.modal-body{padding:1.5rem;flex:1}.modal-footer{display:flex;gap:.75rem;padding:1rem 1.5rem;border-top:1px solid var(--border-color)}.modal-footer button{flex:1}.form-group{margin-bottom:1.5rem}.form-group label{display:block;font-weight:600;margin-bottom:.5rem;color:var(--text-primary)}.input-field{width:100%;padding:.75rem;border:2px solid var(--border-color);border-radius:8px;font-size:1rem;transition:border-color .3s ease}.input-field:focus{outline:none;border-color:var(--primary-color)}.exercise-selector{max-height:300px;overflow-y:auto;border:2px solid var(--border-color);border-radius:8px;padding:.5rem}.exercise-checkbox-item{display:flex;align-items:center;padding:.75rem;border-radius:8px;transition:background-color .2s ease}.exercise-checkbox-item:hover{background-color:var(--background)}.exercise-checkbox-item input[type="checkbox"]{width:20px;height:20px;margin-right:.75rem;cursor:pointer}.exercise-checkbox-item label{flex:1;cursor:pointer;margin:0;font-weight:400}.routine-selector{display:flex;flex-direction:column;gap:.75rem}.routine-select-item{background-color:var(--background);border:2px solid var(--border-color);border-radius:12px;padding:1rem;cursor:pointer;transition:all .3s ease}.routine-select-item:active{transform:scale(.98);border-color:var(--primary-color)}.routine-select-name{font-weight:600;margin-bottom:.25rem}.routine-select-count{font-size:.9rem;color:var(--text-secondary)}@media (min-width:768px){.app-container{max-width:800px;margin:0 auto}.header{border-radius:0 0 20px 20px}.main-content{padding:2rem}.modal.active{align-items:center;justify-content:center}.modal-content{max-width:600px;border-radius:20px}}
+</style>
+</head>
+<body>
+<div class="app-container">
+<header class="header">
+<h1>💪 Mi Entrenamiento</h1>
+<div class="date-display" id="currentDate"></div>
+</header>
+<nav class="nav-tabs">
+<button class="tab-button active" data-tab="today">Hoy</button>
+<button class="tab-button" data-tab="routines">Rutinas</button>
+<button class="tab-button" data-tab="exercises">Ejercicios</button>
+</nav>
+<main class="main-content">
+<div class="tab-content active" id="today-tab">
+<div class="section-header">
+<h2>Entrenamiento de Hoy</h2>
+<button class="btn-primary" id="selectRoutineBtn">Seleccionar Rutina</button>
+</div>
+<div id="todayWorkout" class="workout-container">
+<div class="empty-state">
+<p>📋 No hay rutina seleccionada para hoy</p>
+<p class="empty-state-hint">Selecciona una rutina para comenzar</p>
+</div>
+</div>
+<div class="stats-container" id="statsContainer" style="display: none;">
+<div class="stat-card">
+<div class="stat-value" id="completedCount">0</div>
+<div class="stat-label">Completados</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="remainingCount">0</div>
+<div class="stat-label">Restantes</div>
+</div>
+</div>
+</div>
+<div class="tab-content" id="routines-tab">
+<div class="section-header">
+<h2>Mis Rutinas</h2>
+<button class="btn-primary" id="createRoutineBtn">+ Nueva Rutina</button>
+</div>
+<div id="routinesList" class="routines-list"></div>
+</div>
+<div class="tab-content" id="exercises-tab">
+<div class="section-header">
+<h2>Biblioteca de Ejercicios</h2>
+</div>
+<div class="filter-buttons">
+<button class="filter-btn active" data-filter="all">Todos</button>
+<button class="filter-btn" data-filter="cardio">Cardio</button>
+<button class="filter-btn" data-filter="fuerza">Fuerza</button>
+<button class="filter-btn" data-filter="flexibilidad">Flexibilidad</button>
+</div>
+<div id="exercisesList" class="exercises-list"></div>
+</div>
+</main>
+</div>
+<div id="routineModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>Nueva Rutina</h3>
+<button class="close-btn" id="closeModalBtn">&times;</button>
+</div>
+<div class="modal-body">
+<div class="form-group">
+<label for="routineName">Nombre de la Rutina</label>
+<input type="text" id="routineName" placeholder="Ej: Entrenamiento Completo" class="input-field">
+</div>
+<div class="form-group">
+<label>Selecciona Ejercicios</label>
+<div id="exerciseSelector" class="exercise-selector"></div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn-secondary" id="cancelRoutineBtn">Cancelar</button>
+<button class="btn-primary" id="saveRoutineBtn">Guardar Rutina</button>
+</div>
+</div>
+</div>
+<div id="selectRoutineModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>Seleccionar Rutina para Hoy</h3>
+<button class="close-btn" id="closeSelectModalBtn">&times;</button>
+</div>
+<div class="modal-body">
+<div id="routineSelector" class="routine-selector"></div>
+</div>
+<div class="modal-footer">
+<button class="btn-secondary" id="cancelSelectBtn">Cancelar</button>
+</div>
+</div>
+</div>
+<script>
+const defaultExercises=[{id:1,name:'Saltos de tijera',category:'cardio',sets:'3',reps:'30',rest:'30s'},{id:2,name:'Burpees',category:'cardio',sets:'3',reps:'10',rest:'45s'},{id:3,name:'Mountain Climbers',category:'cardio',sets:'3',reps:'20',rest:'30s'},{id:4,name:'Rodillas altas',category:'cardio',sets:'3',reps:'30',rest:'30s'},{id:5,name:'Correr en el lugar',category:'cardio',sets:'1',reps:'5 min',rest:'-'},{id:6,name:'Flexiones',category:'fuerza',sets:'3',reps:'12',rest:'60s'},{id:7,name:'Sentadillas',category:'fuerza',sets:'4',reps:'15',rest:'60s'},{id:8,name:'Plancha',category:'fuerza',sets:'3',reps:'45s',rest:'30s'},{id:9,name:'Zancadas',category:'fuerza',sets:'3',reps:'12',rest:'45s'},{id:10,name:'Fondos de tríceps',category:'fuerza',sets:'3',reps:'12',rest:'45s'},{id:11,name:'Abdominales',category:'fuerza',sets:'3',reps:'20',rest:'30s'},{id:12,name:'Puente de glúteos',category:'fuerza',sets:'3',reps:'15',rest:'45s'},{id:13,name:'Plancha lateral',category:'fuerza',sets:'3',reps:'30s',rest:'30s'},{id:14,name:'Estiramiento de cuádriceps',category:'flexibilidad',sets:'2',reps:'30s',rest:'-'},{id:15,name:'Estiramiento de isquiotibiales',category:'flexibilidad',sets:'2',reps:'30s',rest:'-'},{id:16,name:'Estiramiento de hombros',category:'flexibilidad',sets:'2',reps:'30s',rest:'-'},{id:17,name:'Rotación de tronco',category:'flexibilidad',sets:'2',reps:'10',rest:'-'},{id:18,name:'Gato-Vaca (yoga)',category:'flexibilidad',sets:'2',reps:'10',rest:'-'}];let state={exercises:[],routines:[],todayWorkout:null,currentTab:'today',currentFilter:'all',completedExercises:[]};function initApp(){loadFromStorage();setupEventListeners();displayCurrentDate();renderExercises();renderRoutines();renderTodayWorkout()}function saveToStorage(){localStorage.setItem('workoutApp',JSON.stringify(state))}function loadFromStorage(){const saved=localStorage.getItem('workoutApp');if(saved){state=JSON.parse(saved)}else{state.exercises=[...defaultExercises]}}function displayCurrentDate(){const dateElement=document.getElementById('currentDate');const options={weekday:'long',year:'numeric',month:'long',day:'numeric'};const today=new Date().toLocaleDateString('es-ES',options);dateElement.textContent=today}function setupEventListeners(){document.querySelectorAll('.tab-button').forEach(button=>{button.addEventListener('click',()=>switchTab(button.dataset.tab))});document.querySelectorAll('.filter-btn').forEach(button=>{button.addEventListener('click',()=>filterExercises(button.dataset.filter))});document.getElementById('createRoutineBtn').addEventListener('click',openCreateRoutineModal);document.getElementById('closeModalBtn').addEventListener('click',closeCreateRoutineModal);document.getElementById('cancelRoutineBtn').addEventListener('click',closeCreateRoutineModal);document.getElementById('saveRoutineBtn').addEventListener('click',saveRoutine);document.getElementById('selectRoutineBtn').addEventListener('click',openSelectRoutineModal);document.getElementById('closeSelectModalBtn').addEventListener('click',closeSelectRoutineModal);document.getElementById('cancelSelectBtn').addEventListener('click',closeSelectRoutineModal);document.getElementById('routineModal').addEventListener('click',(e)=>{if(e.target.id==='routineModal')closeCreateRoutineModal()});document.getElementById('selectRoutineModal').addEventListener('click',(e)=>{if(e.target.id==='selectRoutineModal')closeSelectRoutineModal()})}function switchTab(tabName){document.querySelectorAll('.tab-button').forEach(btn=>{btn.classList.remove('active')});event.target.classList.add('active');document.querySelectorAll('.tab-content').forEach(content=>{content.classList.remove('active')});document.getElementById(`${tabName}-tab`).classList.add('active');state.currentTab=tabName}function filterExercises(filter){document.querySelectorAll('.filter-btn').forEach(btn=>{btn.classList.remove('active')});event.target.classList.add('active');state.currentFilter=filter;renderExercises()}function renderExercises(){const container=document.getElementById('exercisesList');const filtered=state.currentFilter==='all'?state.exercises:state.exercises.filter(ex=>ex.category===state.currentFilter);container.innerHTML=filtered.map(exercise=>`<div class="exercise-card"><div class="exercise-card-header"><div class="exercise-card-name">${exercise.name}</div><span class="exercise-category">${getCategoryLabel(exercise.category)}</span></div><div class="exercise-card-details">${exercise.sets} series × ${exercise.reps} reps | Descanso: ${exercise.rest}</div></div>`).join('')}function getCategoryLabel(category){const labels={'cardio':'Cardio','fuerza':'Fuerza','flexibilidad':'Flexibilidad'};return labels[category]||category}function renderRoutines(){const container=document.getElementById('routinesList');if(state.routines.length===0){container.innerHTML=`<div class="empty-state"><p>📝 No tienes rutinas creadas</p><p class="empty-state-hint">Crea tu primera rutina para comenzar</p></div>`;return}container.innerHTML=state.routines.map(routine=>`<div class="routine-card"><div class="routine-name">${routine.name}</div><div class="routine-info"><span>${routine.exercises.length} ejercicios</span></div><div class="routine-actions"><button class="action-btn use" onclick="useRoutineForToday(${routine.id})">Usar Hoy</button><button class="action-btn delete" onclick="deleteRoutine(${routine.id})">Eliminar</button></div></div>`).join('')}function openCreateRoutineModal(){const modal=document.getElementById('routineModal');const selector=document.getElementById('exerciseSelector');selector.innerHTML=state.exercises.map(exercise=>`<div class="exercise-checkbox-item"><input type="checkbox" id="ex-${exercise.id}" value="${exercise.id}"><label for="ex-${exercise.id}">${exercise.name} (${getCategoryLabel(exercise.category)})</label></div>`).join('');modal.classList.add('active')}function closeCreateRoutineModal(){document.getElementById('routineModal').classList.remove('active');document.getElementById('routineName').value='';document.querySelectorAll('#exerciseSelector input[type="checkbox"]').forEach(cb=>{cb.checked=false})}function saveRoutine(){const name=document.getElementById('routineName').value.trim();const selectedExercises=Array.from(document.querySelectorAll('#exerciseSelector input[type="checkbox"]:checked')).map(cb=>parseInt(cb.value));if(!name){alert('Por favor ingresa un nombre para la rutina');return}if(selectedExercises.length===0){alert('Por favor selecciona al menos un ejercicio');return}const routine={id:Date.now(),name:name,exercises:selectedExercises};state.routines.push(routine);saveToStorage();renderRoutines();closeCreateRoutineModal()}function deleteRoutine(id){if(confirm('¿Estás seguro de eliminar esta rutina?')){state.routines=state.routines.filter(r=>r.id!==id);if(state.todayWorkout&&state.todayWorkout.id===id){state.todayWorkout=null;state.completedExercises=[]}saveToStorage();renderRoutines();renderTodayWorkout()}}function openSelectRoutineModal(){const modal=document.getElementById('selectRoutineModal');const selector=document.getElementById('routineSelector');if(state.routines.length===0){alert('Primero debes crear una rutina');return}selector.innerHTML=state.routines.map(routine=>`<div class="routine-select-item" onclick="selectRoutineForToday(${routine.id})"><div class="routine-select-name">${routine.name}</div><div class="routine-select-count">${routine.exercises.length} ejercicios</div></div>`).join('');modal.classList.add('active')}function closeSelectRoutineModal(){document.getElementById('selectRoutineModal').classList.remove('active')}function selectRoutineForToday(routineId){const routine=state.routines.find(r=>r.id===routineId);if(routine){state.todayWorkout=routine;state.completedExercises=[];saveToStorage();renderTodayWorkout();closeSelectRoutineModal();document.querySelector('[data-tab="today"]').click()}}function useRoutineForToday(routineId){selectRoutineForToday(routineId)}function renderTodayWorkout(){const container=document.getElementById('todayWorkout');const statsContainer=document.getElementById('statsContainer');if(!state.todayWorkout){container.innerHTML=`<div class="empty-state"><p>📋 No hay rutina seleccionada para hoy</p><p class="empty-state-hint">Selecciona una rutina para comenzar</p></div>`;statsContainer.style.display='none';return}const workoutExercises=state.todayWorkout.exercises.map(exId=>state.exercises.find(ex=>ex.id===exId)).filter(ex=>ex!==undefined);container.innerHTML=workoutExercises.map(exercise=>{const isCompleted=state.completedExercises.includes(exercise.id);return`<div class="exercise-item ${isCompleted?'completed':''}"><div class="exercise-header"><div class="exercise-name">${exercise.name}</div></div><div class="exercise-details"><div class="exercise-detail"><span>📊</span><span>${exercise.sets} series</span></div><div class="exercise-detail"><span>🔢</span><span>${exercise.reps} reps</span></div><div class="exercise-detail"><span>⏱️</span><span>${exercise.rest}</span></div></div><button class="complete-btn ${isCompleted?'completed':''}" onclick="toggleExerciseComplete(${exercise.id})">${isCompleted?'✓ Completado':'Marcar como Completado'}</button></div>`}).join('');updateStats(workoutExercises.length);statsContainer.style.display='grid'}function toggleExerciseComplete(exerciseId){const index=state.completedExercises.indexOf(exerciseId);if(index===-1){state.completedExercises.push(exerciseId)}else{state.completedExercises.splice(index,1)}saveToStorage();renderTodayWorkout()}function updateStats(totalExercises){const completed=state.completedExercises.length;const remaining=totalExercises-completed;document.getElementById('completedCount').textContent=completed;document.getElementById('remainingCount').textContent=remaining}document.addEventListener('DOMContentLoaded',initApp);
+</script>
+</body>
+</html>
