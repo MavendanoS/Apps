@@ -60,6 +60,12 @@ let timerState = {
     }
 };
 
+// Edit State
+let editState = {
+    isEditing: false,
+    routineId: null
+};
+
 // Initialize App
 function initApp() {
     loadFromStorage();
@@ -210,6 +216,9 @@ function renderRoutines() {
                 <button class="action-btn use" onclick="useRoutineForToday(${routine.id})">
                     Usar Hoy
                 </button>
+                <button class="action-btn edit" onclick="openEditRoutineModal(${routine.id})">
+                    ✏️ Editar
+                </button>
                 <button class="action-btn delete" onclick="deleteRoutine(${routine.id})">
                     Eliminar
                 </button>
@@ -223,6 +232,21 @@ function openCreateRoutineModal() {
     const modal = document.getElementById('routineModal');
     const selector = document.getElementById('exerciseSelector');
 
+    // Reset edit state
+    editState.isEditing = false;
+    editState.routineId = null;
+
+    // Update modal title
+    document.querySelector('#routineModal .modal-header h3').textContent = 'Nueva Rutina';
+
+    // Reset form
+    document.getElementById('routineName').value = '';
+    document.getElementById('tabataMode').checked = false;
+    document.getElementById('tabataSettings').style.display = 'none';
+    document.getElementById('tabataWork').value = 20;
+    document.getElementById('tabataRest').value = 10;
+    document.getElementById('tabataRounds').value = 8;
+
     // Populate exercise checkboxes
     selector.innerHTML = state.exercises.map(exercise => `
         <div class="exercise-checkbox-item">
@@ -230,6 +254,58 @@ function openCreateRoutineModal() {
             <label for="ex-${exercise.id}">${exercise.name} (${getCategoryLabel(exercise.category)})</label>
         </div>
     `).join('');
+
+    // Setup Tabata mode toggle
+    const tabataCheckbox = document.getElementById('tabataMode');
+    const tabataSettings = document.getElementById('tabataSettings');
+
+    tabataCheckbox.addEventListener('change', function() {
+        tabataSettings.style.display = this.checked ? 'block' : 'none';
+    });
+
+    modal.classList.add('active');
+}
+
+// Edit Routine Modal
+function openEditRoutineModal(routineId) {
+    const routine = state.routines.find(r => r.id === routineId);
+    if (!routine) return;
+
+    const modal = document.getElementById('routineModal');
+    const selector = document.getElementById('exerciseSelector');
+
+    // Set edit state
+    editState.isEditing = true;
+    editState.routineId = routineId;
+
+    // Update modal title
+    document.querySelector('#routineModal .modal-header h3').textContent = 'Editar Rutina';
+
+    // Load routine data
+    document.getElementById('routineName').value = routine.name;
+
+    // Load Tabata configuration
+    if (routine.tabata) {
+        document.getElementById('tabataMode').checked = true;
+        document.getElementById('tabataSettings').style.display = 'block';
+        document.getElementById('tabataWork').value = routine.tabata.workTime;
+        document.getElementById('tabataRest').value = routine.tabata.restTime;
+        document.getElementById('tabataRounds').value = routine.tabata.rounds;
+    } else {
+        document.getElementById('tabataMode').checked = false;
+        document.getElementById('tabataSettings').style.display = 'none';
+    }
+
+    // Populate exercise checkboxes
+    selector.innerHTML = state.exercises.map(exercise => {
+        const isSelected = routine.exercises.includes(exercise.id);
+        return `
+            <div class="exercise-checkbox-item">
+                <input type="checkbox" id="ex-${exercise.id}" value="${exercise.id}" ${isSelected ? 'checked' : ''}>
+                <label for="ex-${exercise.id}">${exercise.name} (${getCategoryLabel(exercise.category)})</label>
+            </div>
+        `;
+    }).join('');
 
     // Setup Tabata mode toggle
     const tabataCheckbox = document.getElementById('tabataMode');
@@ -270,25 +346,57 @@ function saveRoutine() {
         return;
     }
 
-    const routine = {
-        id: Date.now(),
-        name: name,
-        exercises: selectedExercises
-    };
+    if (editState.isEditing) {
+        // Edit existing routine
+        const routineIndex = state.routines.findIndex(r => r.id === editState.routineId);
+        if (routineIndex !== -1) {
+            const routine = {
+                id: editState.routineId, // Keep the same ID
+                name: name,
+                exercises: selectedExercises
+            };
 
-    // Add Tabata configuration if enabled
-    if (isTabata) {
-        routine.tabata = {
-            enabled: true,
-            workTime: parseInt(document.getElementById('tabataWork').value) || 20,
-            restTime: parseInt(document.getElementById('tabataRest').value) || 10,
-            rounds: parseInt(document.getElementById('tabataRounds').value) || 8
+            // Add Tabata configuration if enabled
+            if (isTabata) {
+                routine.tabata = {
+                    enabled: true,
+                    workTime: parseInt(document.getElementById('tabataWork').value) || 20,
+                    restTime: parseInt(document.getElementById('tabataRest').value) || 10,
+                    rounds: parseInt(document.getElementById('tabataRounds').value) || 8
+                };
+            }
+
+            state.routines[routineIndex] = routine;
+
+            // Update today's workout if it's the same routine
+            if (state.todayWorkout && state.todayWorkout.id === editState.routineId) {
+                state.todayWorkout = routine;
+            }
+        }
+    } else {
+        // Create new routine
+        const routine = {
+            id: Date.now(),
+            name: name,
+            exercises: selectedExercises
         };
+
+        // Add Tabata configuration if enabled
+        if (isTabata) {
+            routine.tabata = {
+                enabled: true,
+                workTime: parseInt(document.getElementById('tabataWork').value) || 20,
+                restTime: parseInt(document.getElementById('tabataRest').value) || 10,
+                rounds: parseInt(document.getElementById('tabataRounds').value) || 8
+            };
+        }
+
+        state.routines.push(routine);
     }
 
-    state.routines.push(routine);
     saveToStorage();
     renderRoutines();
+    renderTodayWorkout(); // Re-render in case we edited today's workout
     closeCreateRoutineModal();
 }
 
