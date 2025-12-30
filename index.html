@@ -21,6 +21,7 @@
             <button class="tab-button active" data-tab="today">Hoy</button>
             <button class="tab-button" data-tab="routines">Rutinas</button>
             <button class="tab-button" data-tab="exercises">Ejercicios</button>
+            <button class="tab-button" data-tab="settings">⚙️</button>
         </nav>
 
         <!-- Main Content -->
@@ -80,6 +81,53 @@
                     <!-- Exercises will be loaded here -->
                 </div>
             </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings-tab">
+                <div class="section-header">
+                    <h2>Configuración</h2>
+                </div>
+
+                <div class="settings-container">
+                    <div class="setting-card">
+                        <div class="setting-header">
+                            <h3>⏱️ Timers de Descanso</h3>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="restBetweenSets">Descanso entre series (segundos)</label>
+                            <div class="timer-input-group">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenSets', -10)">-10</button>
+                                <input type="number" id="restBetweenSets" class="timer-input" value="60" min="0" max="300">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenSets', 10)">+10</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="restBetweenExercises">Descanso entre ejercicios (segundos)</label>
+                            <div class="timer-input-group">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenExercises', -10)">-10</button>
+                                <input type="number" id="restBetweenExercises" class="timer-input" value="90" min="0" max="300">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenExercises', 10)">+10</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autoStartTimer" checked>
+                                Iniciar timer automáticamente al completar ejercicio
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="soundEnabled" checked>
+                                Activar sonido cuando termina el timer
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -128,6 +176,29 @@
 
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelSelectBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer Modal -->
+    <div id="timerModal" class="modal timer-modal">
+        <div class="modal-content timer-modal-content">
+            <div class="timer-display-container">
+                <div class="timer-title" id="timerTitle">Descanso entre Series</div>
+                <div class="timer-display" id="timerDisplay">00:60</div>
+                <div class="timer-progress-ring">
+                    <svg width="200" height="200">
+                        <circle cx="100" cy="100" r="90" class="timer-progress-bg"/>
+                        <circle cx="100" cy="100" r="90" class="timer-progress-bar" id="timerProgressBar"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-control-btn" id="pauseTimerBtn" onclick="pauseTimer()">
+                    <span id="pauseIcon">⏸️</span>
+                </button>
+                <button class="timer-control-btn" onclick="skipTimer()">⏭️ Saltar</button>
+                <button class="timer-control-btn danger" onclick="stopTimer()">⏹️ Detener</button>
             </div>
         </div>
     </div>

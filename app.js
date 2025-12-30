@@ -32,13 +32,29 @@ let state = {
     todayWorkout: null,
     currentTab: 'today',
     currentFilter: 'all',
-    completedExercises: []
+    completedExercises: [],
+    settings: {
+        restBetweenSets: 60,
+        restBetweenExercises: 90,
+        autoStartTimer: true,
+        soundEnabled: true
+    }
+};
+
+// Timer State
+let timerState = {
+    intervalId: null,
+    remainingTime: 0,
+    totalTime: 0,
+    isPaused: false,
+    type: 'sets' // 'sets' or 'exercises'
 };
 
 // Initialize App
 function initApp() {
     loadFromStorage();
     setupEventListeners();
+    loadSettings();
     displayCurrentDate();
     renderExercises();
     renderRoutines();
@@ -318,8 +334,9 @@ function renderTodayWorkout() {
         state.exercises.find(ex => ex.id === exId)
     ).filter(ex => ex !== undefined);
 
-    container.innerHTML = workoutExercises.map(exercise => {
+    container.innerHTML = workoutExercises.map((exercise, index) => {
         const isCompleted = state.completedExercises.includes(exercise.id);
+        const isLast = index === workoutExercises.length - 1;
         return `
             <div class="exercise-item ${isCompleted ? 'completed' : ''}">
                 <div class="exercise-header">
@@ -338,6 +355,14 @@ function renderTodayWorkout() {
                         <span>⏱️</span>
                         <span>${exercise.rest}</span>
                     </div>
+                </div>
+                <div class="exercise-timer-controls">
+                    <button class="start-timer-btn" onclick="startRestTimer('sets')">
+                        ⏱️ Timer Series
+                    </button>
+                    ${!isLast ? `<button class="start-timer-btn" onclick="startRestTimer('exercises')">
+                        ⏱️ Timer Ejercicio
+                    </button>` : ''}
                 </div>
                 <button class="complete-btn ${isCompleted ? 'completed' : ''}"
                         onclick="toggleExerciseComplete(${exercise.id})">
@@ -371,6 +396,186 @@ function updateStats(totalExercises) {
 
     document.getElementById('completedCount').textContent = completed;
     document.getElementById('remainingCount').textContent = remaining;
+}
+
+// ===== TIMER FUNCTIONS =====
+
+function startTimer(duration, type = 'sets') {
+    // Stop any existing timer
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+    }
+
+    timerState.totalTime = duration;
+    timerState.remainingTime = duration;
+    timerState.type = type;
+    timerState.isPaused = false;
+
+    // Update modal title
+    const title = type === 'sets' ? 'Descanso entre Series' : 'Descanso entre Ejercicios';
+    document.getElementById('timerTitle').textContent = title;
+
+    // Show timer modal
+    document.getElementById('timerModal').classList.add('active');
+
+    // Start countdown
+    updateTimerDisplay();
+    timerState.intervalId = setInterval(() => {
+        if (!timerState.isPaused) {
+            timerState.remainingTime--;
+
+            if (timerState.remainingTime <= 0) {
+                finishTimer();
+            } else {
+                updateTimerDisplay();
+            }
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timerState.remainingTime / 60);
+    const seconds = timerState.remainingTime % 60;
+    const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    document.getElementById('timerDisplay').textContent = display;
+
+    // Update progress ring
+    const progressBar = document.getElementById('timerProgressBar');
+    const progress = (timerState.remainingTime / timerState.totalTime) * 565.48;
+    progressBar.style.strokeDashoffset = 565.48 - progress;
+
+    // Change color based on time remaining
+    progressBar.classList.remove('warning', 'danger');
+    const percentRemaining = (timerState.remainingTime / timerState.totalTime) * 100;
+    if (percentRemaining <= 20) {
+        progressBar.classList.add('danger');
+    } else if (percentRemaining <= 50) {
+        progressBar.classList.add('warning');
+    }
+}
+
+function pauseTimer() {
+    timerState.isPaused = !timerState.isPaused;
+    const pauseIcon = document.getElementById('pauseIcon');
+    pauseIcon.textContent = timerState.isPaused ? '▶️' : '⏸️';
+}
+
+function skipTimer() {
+    stopTimer();
+}
+
+function stopTimer() {
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+    }
+    document.getElementById('timerModal').classList.remove('active');
+    timerState.isPaused = false;
+    document.getElementById('pauseIcon').textContent = '⏸️';
+}
+
+function finishTimer() {
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+    }
+
+    // Play sound or vibrate if enabled
+    if (state.settings.soundEnabled) {
+        playTimerSound();
+        vibrateDevice();
+    }
+
+    // Update display to show 00:00
+    document.getElementById('timerDisplay').textContent = '00:00';
+
+    // Close modal after a short delay
+    setTimeout(() => {
+        stopTimer();
+    }, 1500);
+}
+
+function playTimerSound() {
+    // Create a simple beep sound using Web Audio API
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function vibrateDevice() {
+    if ('vibrate' in navigator) {
+        navigator.vibrate([200, 100, 200]);
+    }
+}
+
+function startRestTimer(type = 'sets') {
+    const duration = type === 'sets' ?
+        state.settings.restBetweenSets :
+        state.settings.restBetweenExercises;
+    startTimer(duration, type);
+}
+
+// ===== SETTINGS FUNCTIONS =====
+
+function adjustTimer(inputId, amount) {
+    const input = document.getElementById(inputId);
+    let value = parseInt(input.value) || 0;
+    value = Math.max(0, Math.min(300, value + amount));
+    input.value = value;
+
+    // Update state
+    if (inputId === 'restBetweenSets') {
+        state.settings.restBetweenSets = value;
+    } else if (inputId === 'restBetweenExercises') {
+        state.settings.restBetweenExercises = value;
+    }
+
+    saveToStorage();
+}
+
+function loadSettings() {
+    document.getElementById('restBetweenSets').value = state.settings.restBetweenSets;
+    document.getElementById('restBetweenExercises').value = state.settings.restBetweenExercises;
+    document.getElementById('autoStartTimer').checked = state.settings.autoStartTimer;
+    document.getElementById('soundEnabled').checked = state.settings.soundEnabled;
+
+    // Add event listeners for settings
+    document.getElementById('restBetweenSets').addEventListener('change', (e) => {
+        state.settings.restBetweenSets = parseInt(e.target.value) || 60;
+        saveToStorage();
+    });
+
+    document.getElementById('restBetweenExercises').addEventListener('change', (e) => {
+        state.settings.restBetweenExercises = parseInt(e.target.value) || 90;
+        saveToStorage();
+    });
+
+    document.getElementById('autoStartTimer').addEventListener('change', (e) => {
+        state.settings.autoStartTimer = e.target.checked;
+        saveToStorage();
+    });
+
+    document.getElementById('soundEnabled').addEventListener('change', (e) => {
+        state.settings.soundEnabled = e.target.checked;
+        saveToStorage();
+    });
 }
 
 // Initialize app when DOM is loaded
