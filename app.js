@@ -47,7 +47,17 @@ let timerState = {
     remainingTime: 0,
     totalTime: 0,
     isPaused: false,
-    type: 'sets' // 'sets' or 'exercises'
+    type: 'sets', // 'sets', 'exercises', or 'tabata'
+    tabata: {
+        isTabata: false,
+        currentRound: 1,
+        totalRounds: 8,
+        workTime: 20,
+        restTime: 10,
+        isWorkPhase: true,
+        currentExerciseIndex: 0,
+        exercises: []
+    }
 };
 
 // Initialize App
@@ -188,9 +198,13 @@ function renderRoutines() {
 
     container.innerHTML = state.routines.map(routine => `
         <div class="routine-card">
-            <div class="routine-name">${routine.name}</div>
+            <div class="routine-name">
+                ${routine.name}
+                ${routine.tabata ? '<span class="tabata-badge">TABATA</span>' : ''}
+            </div>
             <div class="routine-info">
                 <span>${routine.exercises.length} ejercicios</span>
+                ${routine.tabata ? `<span> | ${routine.tabata.workTime}s/${routine.tabata.restTime}s × ${routine.tabata.rounds} rondas</span>` : ''}
             </div>
             <div class="routine-actions">
                 <button class="action-btn use" onclick="useRoutineForToday(${routine.id})">
@@ -217,12 +231,22 @@ function openCreateRoutineModal() {
         </div>
     `).join('');
 
+    // Setup Tabata mode toggle
+    const tabataCheckbox = document.getElementById('tabataMode');
+    const tabataSettings = document.getElementById('tabataSettings');
+
+    tabataCheckbox.addEventListener('change', function() {
+        tabataSettings.style.display = this.checked ? 'block' : 'none';
+    });
+
     modal.classList.add('active');
 }
 
 function closeCreateRoutineModal() {
     document.getElementById('routineModal').classList.remove('active');
     document.getElementById('routineName').value = '';
+    document.getElementById('tabataMode').checked = false;
+    document.getElementById('tabataSettings').style.display = 'none';
     document.querySelectorAll('#exerciseSelector input[type="checkbox"]').forEach(cb => {
         cb.checked = false;
     });
@@ -233,6 +257,8 @@ function saveRoutine() {
     const selectedExercises = Array.from(
         document.querySelectorAll('#exerciseSelector input[type="checkbox"]:checked')
     ).map(cb => parseInt(cb.value));
+
+    const isTabata = document.getElementById('tabataMode').checked;
 
     if (!name) {
         alert('Por favor ingresa un nombre para la rutina');
@@ -249,6 +275,16 @@ function saveRoutine() {
         name: name,
         exercises: selectedExercises
     };
+
+    // Add Tabata configuration if enabled
+    if (isTabata) {
+        routine.tabata = {
+            enabled: true,
+            workTime: parseInt(document.getElementById('tabataWork').value) || 20,
+            restTime: parseInt(document.getElementById('tabataRest').value) || 10,
+            rounds: parseInt(document.getElementById('tabataRounds').value) || 8
+        };
+    }
 
     state.routines.push(routine);
     saveToStorage();
@@ -333,6 +369,40 @@ function renderTodayWorkout() {
     const workoutExercises = state.todayWorkout.exercises.map(exId =>
         state.exercises.find(ex => ex.id === exId)
     ).filter(ex => ex !== undefined);
+
+    // Show Tabata start button if it's a Tabata workout
+    if (state.todayWorkout.tabata) {
+        const tabata = state.todayWorkout.tabata;
+        container.innerHTML = `
+            <div class="tabata-workout-card">
+                <div class="tabata-workout-header">
+                    <h3>🔥 Entrenamiento Tabata</h3>
+                    <span class="tabata-badge">HIIT</span>
+                </div>
+                <div class="tabata-workout-info">
+                    <div class="tabata-detail">
+                        <strong>${tabata.workTime}s</strong> Trabajo
+                    </div>
+                    <div class="tabata-detail">
+                        <strong>${tabata.restTime}s</strong> Descanso
+                    </div>
+                    <div class="tabata-detail">
+                        <strong>${tabata.rounds}</strong> Rondas
+                    </div>
+                </div>
+                <div class="tabata-exercises-list">
+                    <h4>Ejercicios:</h4>
+                    ${workoutExercises.map(ex => `<div class="tabata-exercise-item">• ${ex.name}</div>`).join('')}
+                </div>
+                <button class="btn-primary start-tabata-btn" onclick="startTabataWorkout()" style="width: 100%; margin-top: 1rem; padding: 1.5rem;">
+                    🔥 Iniciar Entrenamiento Tabata
+                </button>
+            </div>
+        `;
+        statsContainer.style.display = 'grid';
+        updateStats(workoutExercises.length);
+        return;
+    }
 
     container.innerHTML = workoutExercises.map((exercise, index) => {
         const isCompleted = state.completedExercises.includes(exercise.id);
@@ -530,6 +600,203 @@ function startRestTimer(type = 'sets') {
         state.settings.restBetweenSets :
         state.settings.restBetweenExercises;
     startTimer(duration, type);
+}
+
+// ===== TABATA FUNCTIONS =====
+
+function startTabataWorkout() {
+    if (!state.todayWorkout || !state.todayWorkout.tabata) {
+        alert('Esta rutina no está configurada en modo Tabata');
+        return;
+    }
+
+    const tabataConfig = state.todayWorkout.tabata;
+    const workoutExercises = state.todayWorkout.exercises.map(exId =>
+        state.exercises.find(ex => ex.id === exId)
+    ).filter(ex => ex !== undefined);
+
+    // Reset tabata state
+    timerState.tabata = {
+        isTabata: true,
+        currentRound: 1,
+        totalRounds: tabataConfig.rounds,
+        workTime: tabataConfig.workTime,
+        restTime: tabataConfig.restTime,
+        isWorkPhase: true,
+        currentExerciseIndex: 0,
+        exercises: workoutExercises
+    };
+
+    startTabataInterval();
+}
+
+function startTabataInterval() {
+    const tabata = timerState.tabata;
+    const currentExercise = tabata.exercises[tabata.currentExerciseIndex];
+
+    if (!currentExercise) {
+        // Finished all exercises
+        finishTabataWorkout();
+        return;
+    }
+
+    // Set timer duration based on phase
+    const duration = tabata.isWorkPhase ? tabata.workTime : tabata.restTime;
+    const title = tabata.isWorkPhase ? '💪 ¡TRABAJA!' : '😮‍💨 Descansa';
+
+    // Update timer state
+    timerState.type = 'tabata';
+    timerState.totalTime = duration;
+    timerState.remainingTime = duration;
+    timerState.isPaused = false;
+
+    // Show tabata info
+    document.getElementById('tabataInfo').style.display = 'block';
+    document.getElementById('currentRound').textContent = tabata.currentRound;
+    document.getElementById('totalRounds').textContent = tabata.totalRounds;
+    document.getElementById('tabataExerciseName').textContent = currentExercise.name;
+    document.getElementById('timerTitle').textContent = title;
+
+    // Apply phase styling
+    const modalContent = document.querySelector('.timer-modal-content');
+    modalContent.classList.remove('work-phase', 'rest-phase');
+    modalContent.classList.add(tabata.isWorkPhase ? 'work-phase' : 'rest-phase');
+
+    // Show modal
+    document.getElementById('timerModal').classList.add('active');
+
+    // Start countdown
+    updateTimerDisplay();
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+    }
+
+    timerState.intervalId = setInterval(() => {
+        if (!timerState.isPaused) {
+            timerState.remainingTime--;
+
+            if (timerState.remainingTime <= 0) {
+                advanceTabataPhase();
+            } else {
+                updateTimerDisplay();
+            }
+        }
+    }, 1000);
+}
+
+function advanceTabataPhase() {
+    const tabata = timerState.tabata;
+
+    // Play sound
+    if (state.settings.soundEnabled) {
+        playTabataSound(tabata.isWorkPhase);
+        vibrateDevice();
+    }
+
+    if (tabata.isWorkPhase) {
+        // Just finished work, go to rest
+        tabata.isWorkPhase = false;
+    } else {
+        // Just finished rest, go to next round or exercise
+        tabata.isWorkPhase = true;
+        tabata.currentRound++;
+
+        // Check if we've completed all rounds for this exercise
+        if (tabata.currentRound > tabata.totalRounds) {
+            // Move to next exercise
+            tabata.currentExerciseIndex++;
+            tabata.currentRound = 1;
+
+            if (tabata.currentExerciseIndex >= tabata.exercises.length) {
+                // Finished all exercises
+                finishTabataWorkout();
+                return;
+            }
+        }
+    }
+
+    // Continue to next interval
+    startTabataInterval();
+}
+
+function playTabataSound(isWorkPhase) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Different sounds for work vs rest
+        oscillator.frequency.value = isWorkPhase ? 600 : 400;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function finishTabataWorkout() {
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+    }
+
+    // Show completion message
+    document.getElementById('timerTitle').textContent = '🎉 ¡Entrenamiento Completado!';
+    document.getElementById('timerDisplay').textContent = '✓';
+
+    if (state.settings.soundEnabled) {
+        // Victory sound
+        playVictorySound();
+        navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100]);
+    }
+
+    // Auto close after delay
+    setTimeout(() => {
+        stopTimer();
+        timerState.tabata.isTabata = false;
+
+        // Mark all exercises as completed
+        state.todayWorkout.exercises.forEach(exId => {
+            if (!state.completedExercises.includes(exId)) {
+                state.completedExercises.push(exId);
+            }
+        });
+        saveToStorage();
+        renderTodayWorkout();
+    }, 3000);
+}
+
+function playVictorySound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        [800, 1000, 1200].forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+
+            const startTime = audioContext.currentTime + (i * 0.2);
+            gainNode.gain.setValueAtTime(0.2, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.3);
+        });
+    } catch (e) {
+        console.log('Audio not supported');
+    }
 }
 
 // ===== SETTINGS FUNCTIONS =====

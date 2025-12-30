@@ -846,6 +846,161 @@ body {
     transform: scale(0.98);
 }
 
+/* Tabata Settings */
+.tabata-settings {
+    background-color: var(--background);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tabata-setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.tabata-setting-row:last-child {
+    margin-bottom: 0;
+}
+
+.tabata-setting-row label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.tabata-input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.tabata-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Tabata Timer Display */
+.tabata-info {
+    margin-bottom: 1rem;
+}
+
+.tabata-round {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.tabata-exercise {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Tabata Badge */
+.tabata-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+/* Tabata Workout Card */
+.tabata-workout-card {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+    border: 3px solid #ff6b6b;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.tabata-workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.tabata-workout-header h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.tabata-workout-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tabata-detail {
+    text-align: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.tabata-detail strong {
+    display: block;
+    font-size: 1.5rem;
+    color: #ff6b6b;
+    margin-bottom: 0.25rem;
+}
+
+.tabata-exercises-list {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tabata-exercises-list h4 {
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.tabata-exercise-item {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Timer Modal Variations */
+.timer-modal-content.work-phase {
+    background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+}
+
+.timer-modal-content.work-phase .timer-title,
+.timer-modal-content.work-phase .timer-display,
+.timer-modal-content.work-phase .tabata-round,
+.timer-modal-content.work-phase .tabata-exercise {
+    color: white;
+}
+
+.timer-modal-content.rest-phase {
+    background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+}
+
+.timer-modal-content.rest-phase .timer-title,
+.timer-modal-content.rest-phase .timer-display {
+    color: var(--text-primary);
+}
+
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
     width: 8px;

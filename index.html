@@ -146,6 +146,28 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="tabataMode">
+                        🔥 Modo Tabata (Intervalos de Alta Intensidad)
+                    </label>
+                </div>
+
+                <div id="tabataSettings" class="tabata-settings" style="display: none;">
+                    <div class="tabata-setting-row">
+                        <label for="tabataWork">Trabajo (segundos)</label>
+                        <input type="number" id="tabataWork" class="tabata-input" value="20" min="5" max="60">
+                    </div>
+                    <div class="tabata-setting-row">
+                        <label for="tabataRest">Descanso (segundos)</label>
+                        <input type="number" id="tabataRest" class="tabata-input" value="10" min="5" max="60">
+                    </div>
+                    <div class="tabata-setting-row">
+                        <label for="tabataRounds">Rondas</label>
+                        <input type="number" id="tabataRounds" class="tabata-input" value="8" min="1" max="20">
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label>Selecciona Ejercicios</label>
                     <div id="exerciseSelector" class="exercise-selector">
                         <!-- Exercise checkboxes will be loaded here -->
@@ -185,6 +207,10 @@
         <div class="modal-content timer-modal-content">
             <div class="timer-display-container">
                 <div class="timer-title" id="timerTitle">Descanso entre Series</div>
+                <div class="tabata-info" id="tabataInfo" style="display: none;">
+                    <div class="tabata-round">Ronda <span id="currentRound">1</span>/<span id="totalRounds">8</span></div>
+                    <div class="tabata-exercise" id="tabataExerciseName"></div>
+                </div>
                 <div class="timer-display" id="timerDisplay">00:60</div>
                 <div class="timer-progress-ring">
                     <svg width="200" height="200">
