@@ -68,6 +68,14 @@ let editState = {
     routineId: null
 };
 
+// Guided Workout State
+let guidedState = {
+    isActive: false,
+    currentExerciseIndex: 0,
+    currentSet: 1,
+    exercises: []
+};
+
 // Initialize App
 function initApp() {
     loadFromStorage();
@@ -514,7 +522,61 @@ function renderTodayWorkout() {
         return;
     }
 
-    container.innerHTML = workoutExercises.map((exercise, index) => {
+    // If in guided mode, show current exercise
+    if (guidedState.isActive) {
+        const currentExercise = workoutExercises[guidedState.currentExerciseIndex];
+        const totalSets = parseInt(currentExercise.sets) || 1;
+        const isLastExercise = guidedState.currentExerciseIndex === workoutExercises.length - 1;
+        const isLastSet = guidedState.currentSet >= totalSets;
+
+        container.innerHTML = `
+            <div class="guided-workout-container">
+                <div class="guided-header">
+                    <h2>▶️ Modo Guiado</h2>
+                    <button class="btn-secondary" onclick="stopGuidedWorkout()" style="padding: 0.5rem 1rem;">
+                        ⏹️ Detener
+                    </button>
+                </div>
+                <div class="guided-progress">
+                    Ejercicio ${guidedState.currentExerciseIndex + 1}/${workoutExercises.length}
+                </div>
+                <div class="guided-exercise-card">
+                    <div class="guided-exercise-name">${currentExercise.name}</div>
+                    <div class="guided-set-info">
+                        <span class="guided-set-current">Serie ${guidedState.currentSet}</span>
+                        <span class="guided-set-total">de ${totalSets}</span>
+                    </div>
+                    <div class="guided-exercise-details">
+                        <div class="guided-detail-item">
+                            <span class="guided-detail-icon">🔢</span>
+                            <span class="guided-detail-text">${currentExercise.reps} repeticiones</span>
+                        </div>
+                        <div class="guided-detail-item">
+                            <span class="guided-detail-icon">⏱️</span>
+                            <span class="guided-detail-text">Descanso: ${currentExercise.rest}</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="completeCurrentSet()"
+                            style="width: 100%; padding: 1.5rem; margin-top: 2rem; font-size: 1.2rem;">
+                        ${isLastSet && isLastExercise ? '🎉 Finalizar Rutina' : isLastSet ? '➡️ Siguiente Ejercicio' : '✓ Serie Completada'}
+                    </button>
+                </div>
+            </div>
+        `;
+        statsContainer.style.display = 'grid';
+        updateStats(workoutExercises.length);
+        return;
+    }
+
+    // Show start button and exercise list for normal workouts
+    const startButtonHtml = `
+        <button class="btn-primary" onclick="startGuidedWorkout()"
+                style="width: 100%; margin-bottom: 1.5rem; padding: 1.5rem; font-size: 1.1rem;">
+            ▶️ Iniciar Rutina Guiada
+        </button>
+    `;
+
+    container.innerHTML = startButtonHtml + workoutExercises.map((exercise, index) => {
         const isCompleted = state.completedExercises.includes(exercise.id);
         const isLast = index === workoutExercises.length - 1;
         return `
@@ -679,6 +741,10 @@ function finishTimer() {
     // Close modal after a short delay
     setTimeout(() => {
         stopTimer();
+        // Execute callback if exists (for guided workout)
+        if (typeof window.finishTimerCallback === 'function') {
+            window.finishTimerCallback();
+        }
     }, 1500);
 }
 
@@ -938,6 +1004,113 @@ function playVictorySound() {
     } catch (e) {
         console.log('Audio not supported');
     }
+}
+
+// ===== GUIDED WORKOUT FUNCTIONS =====
+
+function startGuidedWorkout() {
+    if (!state.todayWorkout) {
+        alert('No hay rutina seleccionada');
+        return;
+    }
+
+    const workoutExercises = state.todayWorkout.exercises.map(exId =>
+        state.exercises.find(ex => ex.id === exId)
+    ).filter(ex => ex !== undefined);
+
+    guidedState.isActive = true;
+    guidedState.currentExerciseIndex = 0;
+    guidedState.currentSet = 1;
+    guidedState.exercises = workoutExercises;
+
+    renderTodayWorkout();
+}
+
+function stopGuidedWorkout() {
+    if (confirm('¿Seguro que quieres detener la rutina guiada?')) {
+        guidedState.isActive = false;
+        guidedState.currentExerciseIndex = 0;
+        guidedState.currentSet = 1;
+        guidedState.exercises = [];
+        renderTodayWorkout();
+    }
+}
+
+function completeCurrentSet() {
+    const currentExercise = guidedState.exercises[guidedState.currentExerciseIndex];
+    const totalSets = parseInt(currentExercise.sets) || 1;
+    const isLastExercise = guidedState.currentExerciseIndex === guidedState.exercises.length - 1;
+    const isLastSet = guidedState.currentSet >= totalSets;
+
+    if (isLastSet && isLastExercise) {
+        // Finish workout
+        finishGuidedWorkout();
+        return;
+    }
+
+    if (isLastSet) {
+        // Move to next exercise
+        // Mark current exercise as completed
+        if (!state.completedExercises.includes(currentExercise.id)) {
+            state.completedExercises.push(currentExercise.id);
+        }
+        saveToStorage();
+
+        // Start rest timer between exercises
+        guidedState.currentExerciseIndex++;
+        guidedState.currentSet = 1;
+
+        // Show rest timer, then continue
+        startGuidedRestTimer('exercises');
+    } else {
+        // Move to next set
+        guidedState.currentSet++;
+
+        // Show rest timer between sets, then continue
+        startGuidedRestTimer('sets');
+    }
+}
+
+function startGuidedRestTimer(type) {
+    const duration = type === 'sets' ?
+        state.settings.restBetweenSets :
+        state.settings.restBetweenExercises;
+
+    // Store the original finishTimer function
+    const originalFinishTimer = window.finishTimerCallback;
+
+    // Set callback to continue guided workout after timer
+    window.finishTimerCallback = () => {
+        renderTodayWorkout();
+        window.finishTimerCallback = originalFinishTimer;
+    };
+
+    startTimer(duration, type);
+}
+
+function finishGuidedWorkout() {
+    // Mark all exercises as completed
+    guidedState.exercises.forEach(exercise => {
+        if (!state.completedExercises.includes(exercise.id)) {
+            state.completedExercises.push(exercise.id);
+        }
+    });
+    saveToStorage();
+
+    // Reset guided state
+    guidedState.isActive = false;
+    guidedState.currentExerciseIndex = 0;
+    guidedState.currentSet = 1;
+    guidedState.exercises = [];
+
+    // Show completion message
+    if (state.settings.soundEnabled) {
+        playVictorySound();
+        navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100]);
+    }
+
+    alert('🎉 ¡Felicitaciones! Has completado tu rutina');
+    renderTodayWorkout();
 }
 
 // ===== SETTINGS FUNCTIONS =====
