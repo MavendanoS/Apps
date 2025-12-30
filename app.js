@@ -37,7 +37,8 @@ let state = {
         restBetweenSets: 60,
         restBetweenExercises: 90,
         autoStartTimer: true,
-        soundEnabled: true
+        soundEnabled: true,
+        voiceCountdownEnabled: true
     }
 };
 
@@ -48,6 +49,7 @@ let timerState = {
     totalTime: 0,
     isPaused: false,
     type: 'sets', // 'sets', 'exercises', or 'tabata'
+    countdownSpoken: new Set(), // Track which countdown numbers have been spoken
     tabata: {
         isTabata: false,
         currentRound: 1,
@@ -588,6 +590,7 @@ function startTimer(duration, type = 'sets') {
     timerState.remainingTime = duration;
     timerState.type = type;
     timerState.isPaused = false;
+    timerState.countdownSpoken = new Set(); // Reset countdown tracking
 
     // Update modal title
     const title = type === 'sets' ? 'Descanso entre Series' : 'Descanso entre Ejercicios';
@@ -630,6 +633,11 @@ function updateTimerDisplay() {
         progressBar.classList.add('danger');
     } else if (percentRemaining <= 50) {
         progressBar.classList.add('warning');
+    }
+
+    // Voice countdown for last 5 seconds
+    if (state.settings.voiceCountdownEnabled && timerState.remainingTime > 0 && timerState.remainingTime <= 5) {
+        speakCountdown(timerState.remainingTime);
     }
 }
 
@@ -703,6 +711,30 @@ function vibrateDevice() {
     }
 }
 
+// Voice Countdown Function
+function speakCountdown(number) {
+    // Only speak if not already spoken for this countdown
+    if (timerState.countdownSpoken.has(number)) {
+        return;
+    }
+
+    // Mark as spoken
+    timerState.countdownSpoken.add(number);
+
+    // Use Web Speech API
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(number.toString());
+        utterance.lang = 'es-ES'; // Spanish
+        utterance.rate = 1.0; // Normal speed
+        utterance.pitch = 1.0; // Normal pitch
+        utterance.volume = 1.0; // Maximum volume
+
+        // Cancel any ongoing speech to ensure countdown is heard
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
 function startRestTimer(type = 'sets') {
     const duration = type === 'sets' ?
         state.settings.restBetweenSets :
@@ -757,6 +789,7 @@ function startTabataInterval() {
     timerState.totalTime = duration;
     timerState.remainingTime = duration;
     timerState.isPaused = false;
+    timerState.countdownSpoken = new Set(); // Reset countdown tracking
 
     // Show tabata info
     document.getElementById('tabataInfo').style.display = 'block';
@@ -930,6 +963,7 @@ function loadSettings() {
     document.getElementById('restBetweenExercises').value = state.settings.restBetweenExercises;
     document.getElementById('autoStartTimer').checked = state.settings.autoStartTimer;
     document.getElementById('soundEnabled').checked = state.settings.soundEnabled;
+    document.getElementById('voiceCountdownEnabled').checked = state.settings.voiceCountdownEnabled;
 
     // Add event listeners for settings
     document.getElementById('restBetweenSets').addEventListener('change', (e) => {
@@ -949,6 +983,11 @@ function loadSettings() {
 
     document.getElementById('soundEnabled').addEventListener('change', (e) => {
         state.settings.soundEnabled = e.target.checked;
+        saveToStorage();
+    });
+
+    document.getElementById('voiceCountdownEnabled').addEventListener('change', (e) => {
+        state.settings.voiceCountdownEnabled = e.target.checked;
         saveToStorage();
     });
 }
