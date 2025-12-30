@@ -1006,6 +1006,39 @@ body {
     color: var(--text-primary);
 }
 
+.timer-modal-content.preparation-phase {
+    background: linear-gradient(135deg, #4c6ef5 0%, #364fc7 100%);
+}
+
+.timer-modal-content.preparation-phase .timer-title,
+.timer-modal-content.preparation-phase .timer-display {
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.timer-modal-content.preparation-phase .timer-display {
+    font-size: 8rem;
+    font-weight: 900;
+    animation: pulse-preparation 1s ease-in-out infinite;
+}
+
+@keyframes pulse-preparation {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.timer-modal-content.preparation-phase .timer-progress-ring {
+    display: none;
+}
+
+.timer-modal-content.preparation-phase .timer-controls {
+    display: none;
+}
+
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
     width: 8px;

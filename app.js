@@ -801,6 +801,131 @@ function speakCountdown(number) {
     }
 }
 
+// Voice Announcement Function
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Preparation Countdown Function
+function startPreparationCountdown(callback) {
+    let countdown = 5;
+
+    // Update modal title and show preparation message
+    document.getElementById('timerTitle').textContent = '¡Listos!';
+    document.getElementById('timerDisplay').textContent = countdown.toString();
+    document.getElementById('timerModal').classList.add('active');
+
+    // Apply preparation styling
+    const modalContent = document.querySelector('.timer-modal-content');
+    modalContent.classList.add('preparation-phase');
+
+    // Speak "Listos"
+    if (state.settings.voiceCountdownEnabled) {
+        speak('¡Listos!');
+    }
+
+    // Wait a moment before starting countdown
+    setTimeout(() => {
+        // Start countdown from 5 to 1
+        const countdownInterval = setInterval(() => {
+            if (countdown > 0) {
+                document.getElementById('timerDisplay').textContent = countdown.toString();
+
+                // Speak the number
+                if (state.settings.voiceCountdownEnabled) {
+                    speak(countdown.toString());
+                }
+
+                // Play beep sound
+                if (state.settings.soundEnabled) {
+                    playPreparationBeep(countdown);
+                }
+
+                countdown--;
+            } else {
+                clearInterval(countdownInterval);
+
+                // Say "Comenzar"
+                if (state.settings.voiceCountdownEnabled) {
+                    speak('¡Comenzar!');
+                }
+
+                // Play start sound
+                if (state.settings.soundEnabled) {
+                    playStartSound();
+                }
+
+                // Close modal
+                setTimeout(() => {
+                    document.getElementById('timerModal').classList.remove('active');
+                    modalContent.classList.remove('preparation-phase');
+
+                    // Execute callback
+                    if (callback) callback();
+                }, 1000);
+            }
+        }, 1000);
+    }, 1000);
+}
+
+function playPreparationBeep(countdown) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Higher frequency for countdown
+        oscillator.frequency.value = 600 + (countdown * 50);
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function playStartSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Play a triumphant chord
+        [800, 1000].forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+
+            const startTime = audioContext.currentTime + (i * 0.1);
+            gainNode.gain.setValueAtTime(0.3, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.4);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.4);
+        });
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
 function startRestTimer(type = 'sets') {
     const duration = type === 'sets' ?
         state.settings.restBetweenSets :
@@ -1023,7 +1148,10 @@ function startGuidedWorkout() {
     guidedState.currentSet = 1;
     guidedState.exercises = workoutExercises;
 
-    renderTodayWorkout();
+    // Start with preparation countdown
+    startPreparationCountdown(() => {
+        renderTodayWorkout();
+    });
 }
 
 function stopGuidedWorkout() {
@@ -1081,8 +1209,17 @@ function startGuidedRestTimer(type) {
 
     // Set callback to continue guided workout after timer
     window.finishTimerCallback = () => {
-        renderTodayWorkout();
         window.finishTimerCallback = originalFinishTimer;
+
+        // If moving to a new exercise, show preparation countdown
+        if (type === 'exercises') {
+            startPreparationCountdown(() => {
+                renderTodayWorkout();
+            });
+        } else {
+            // Just continue with next set (no preparation needed)
+            renderTodayWorkout();
+        }
     };
 
     startTimer(duration, type);
