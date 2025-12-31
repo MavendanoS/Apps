@@ -1,0 +1,3013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mi Entrenamiento en Casa</title>
+    <style>
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4c6ef5;
+    --primary-dark: #364fc7;
+    --secondary-color: #51cf66;
+    --danger-color: #ff6b6b;
+    --warning-color: #ffd43b;
+    --background: #f8f9fa;
+    --surface: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+.app-container {
+    max-width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 1.5rem 1rem 1rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.date-display {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    display: flex;
+    background-color: var(--surface);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 85px;
+    z-index: 99;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tab-button:active {
+    background-color: var(--background);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 1rem;
+    padding-bottom: 2rem;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:active {
+    background-color: var(--primary-dark);
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:active {
+    background-color: var(--background);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: var(--surface);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-hint {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Workout Container */
+.workout-container {
+    margin-bottom: 1.5rem;
+}
+
+.exercise-item {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.exercise-item.completed {
+    opacity: 0.6;
+    background-color: #e7f5ff;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.exercise-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.exercise-details {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.exercise-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.complete-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.complete-btn:not(.completed) {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.complete-btn.completed {
+    background-color: var(--text-secondary);
+    color: white;
+}
+
+.complete-btn:active {
+    transform: scale(0.98);
+}
+
+/* Stats Container */
+.stats-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.stat-card {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Routines List */
+.routines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.routine-card {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.routine-card:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-lg);
+}
+
+.routine-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.routine-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.routine-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn.use {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.action-btn.edit {
+    background-color: var(--warning-color);
+    color: var(--text-primary);
+}
+
+.action-btn.delete {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Exercises List */
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border-color);
+    background-color: var(--surface);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.filter-btn:active {
+    transform: scale(0.95);
+}
+
+.exercises-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.exercise-card {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.exercise-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.exercise-card-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.exercise-category {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.exercise-card-details {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    align-items: flex-end;
+}
+
+@media (min-width: 768px) {
+    .modal.active {
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.modal-content {
+    background-color: var(--surface);
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+    animation: slideUp 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .modal-content {
+        max-width: 600px;
+        border-radius: 20px;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.modal-footer button {
+    flex: 1;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Exercise Selector */
+.exercise-selector {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+.exercise-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.exercise-checkbox-item:hover {
+    background-color: var(--background);
+}
+
+.exercise-checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.75rem;
+    cursor: pointer;
+}
+
+.exercise-checkbox-item label {
+    flex: 1;
+    cursor: pointer;
+    margin: 0;
+    font-weight: normal;
+}
+
+/* Routine Selector */
+.routine-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.routine-select-item {
+    background-color: var(--background);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.routine-select-item:active {
+    transform: scale(0.98);
+    border-color: var(--primary-color);
+}
+
+.routine-select-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.routine-select-count {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .app-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .header {
+        border-radius: 0 0 20px 20px;
+    }
+
+    .main-content {
+        padding: 2rem;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Settings Container */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.setting-card {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.setting-header h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.setting-item {
+    margin-bottom: 1.5rem;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-item label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.timer-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-btn {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--primary-color);
+    background-color: var(--surface);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.timer-btn:active {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(0.95);
+}
+
+.timer-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.timer-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.75rem;
+    cursor: pointer;
+}
+
+/* Timer Modal */
+.timer-modal {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.timer-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-modal-content {
+    max-width: 400px;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.timer-display-container {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timer-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.timer-display {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 1rem 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.timer-progress-ring {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.timer-progress-ring svg {
+    transform: rotate(-90deg);
+}
+
+.timer-progress-bg {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 8;
+}
+
+.timer-progress-bar {
+    fill: none;
+    stroke: var(--primary-color);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 565.48;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.timer-progress-bar.warning {
+    stroke: var(--warning-color);
+}
+
+.timer-progress-bar.danger {
+    stroke: var(--danger-color);
+}
+
+.timer-controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.timer-control-btn {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow);
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.timer-control-btn.danger {
+    background-color: var(--danger-color);
+}
+
+.timer-control-btn:active {
+    transform: scale(0.95);
+}
+
+/* Timer in Exercise Item */
+.exercise-timer-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.start-timer-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid var(--primary-color);
+    background-color: var(--surface);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.start-timer-btn:active {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(0.98);
+}
+
+/* Tabata Settings */
+.tabata-settings {
+    background-color: var(--background);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tabata-setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.tabata-setting-row:last-child {
+    margin-bottom: 0;
+}
+
+.tabata-setting-row label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.tabata-input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.tabata-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Tabata Timer Display */
+.tabata-info {
+    margin-bottom: 1rem;
+}
+
+.tabata-round {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.tabata-exercise {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Tabata Badge */
+.tabata-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+/* Tabata Workout Card */
+.tabata-workout-card {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+    border: 3px solid #ff6b6b;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.tabata-workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.tabata-workout-header h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.tabata-workout-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tabata-detail {
+    text-align: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.tabata-detail strong {
+    display: block;
+    font-size: 1.5rem;
+    color: #ff6b6b;
+    margin-bottom: 0.25rem;
+}
+
+.tabata-exercises-list {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tabata-exercises-list h4 {
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.tabata-exercise-item {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Timer Modal Variations */
+.timer-modal-content.work-phase {
+    background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+}
+
+.timer-modal-content.work-phase .timer-title,
+.timer-modal-content.work-phase .timer-display,
+.timer-modal-content.work-phase .tabata-round,
+.timer-modal-content.work-phase .tabata-exercise {
+    color: white;
+}
+
+.timer-modal-content.rest-phase {
+    background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+}
+
+.timer-modal-content.rest-phase .timer-title,
+.timer-modal-content.rest-phase .timer-display {
+    color: var(--text-primary);
+}
+
+.timer-modal-content.preparation-phase {
+    background: linear-gradient(135deg, #4c6ef5 0%, #364fc7 100%);
+}
+
+.timer-modal-content.preparation-phase .timer-title,
+.timer-modal-content.preparation-phase .timer-display {
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.timer-modal-content.preparation-phase .timer-display {
+    font-size: 8rem;
+    font-weight: 900;
+    animation: pulse-preparation 1s ease-in-out infinite;
+}
+
+@keyframes pulse-preparation {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.timer-modal-content.preparation-phase .timer-progress-ring {
+    display: none;
+}
+
+.timer-modal-content.preparation-phase .timer-controls {
+    display: none;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Guided Workout Styles */
+.guided-workout-container {
+    padding: 1rem 0;
+}
+
+.guided-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.guided-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.guided-progress {
+    background: var(--surface);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.guided-exercise-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    box-shadow: var(--shadow-lg);
+    color: white;
+}
+
+.guided-exercise-name {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.guided-set-info {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.guided-set-current {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.guided-set-total {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.guided-exercise-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.guided-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1rem;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.guided-detail-icon {
+    font-size: 1.5rem;
+}
+
+.guided-detail-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.guided-exercise-card .btn-primary {
+    background: white !important;
+    color: var(--primary-color) !important;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guided-exercise-card .btn-primary:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Interval Timer Screen - Professional Fullscreen Design */
+.interval-timer-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    color: white;
+}
+
+.interval-timer-header {
+    padding: 1.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.interval-stop-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    font-size: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.interval-stop-btn:active {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0.95);
+}
+
+.interval-progress-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.interval-main-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.interval-exercise-name {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.02em;
+    animation: fadeInScale 0.5s ease;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.interval-set-counter {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+}
+
+.interval-set-current {
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.interval-set-divider {
+    font-size: 4rem;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.interval-set-total {
+    font-size: 4rem;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+.interval-exercise-info {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.interval-info-badge {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.interval-info-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.interval-info-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.8;
+    letter-spacing: 0.1em;
+}
+
+.interval-action-area {
+    padding: 2rem 1.5rem;
+    padding-bottom: 3rem;
+}
+
+.interval-complete-btn {
+    width: 100%;
+    background: white;
+    color: #27ae60;
+    font-size: 1.5rem;
+    font-weight: 900;
+    padding: 1.8rem;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.02em;
+}
+
+.interval-complete-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 400px) {
+    .interval-exercise-name {
+        font-size: 2.2rem;
+    }
+
+    .interval-set-current {
+        font-size: 6rem;
+    }
+
+    .interval-set-divider,
+    .interval-set-total {
+        font-size: 3rem;
+    }
+
+    .interval-info-value {
+        font-size: 2rem;
+    }
+
+    .interval-complete-btn {
+        font-size: 1.3rem;
+        padding: 1.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>💪 Mi Entrenamiento</h1>
+            <div class="date-display" id="currentDate"></div>
+            <div style="font-size: 0.7rem; opacity: 0.7; margin-top: 0.25rem;">v2.0 - Interval Timer</div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-button active" data-tab="today">Hoy</button>
+            <button class="tab-button" data-tab="routines">Rutinas</button>
+            <button class="tab-button" data-tab="exercises">Ejercicios</button>
+            <button class="tab-button" data-tab="settings">⚙️</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Today's Workout Tab -->
+            <div class="tab-content active" id="today-tab">
+                <div class="section-header">
+                    <h2>Entrenamiento de Hoy</h2>
+                    <button class="btn-primary" id="selectRoutineBtn">Seleccionar Rutina</button>
+                </div>
+
+                <div id="todayWorkout" class="workout-container">
+                    <div class="empty-state">
+                        <p>📋 No hay rutina seleccionada para hoy</p>
+                        <p class="empty-state-hint">Selecciona una rutina para comenzar</p>
+                    </div>
+                </div>
+
+                <div class="stats-container" id="statsContainer" style="display: none;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="completedCount">0</div>
+                        <div class="stat-label">Completados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="remainingCount">0</div>
+                        <div class="stat-label">Restantes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Routines Tab -->
+            <div class="tab-content" id="routines-tab">
+                <div class="section-header">
+                    <h2>Mis Rutinas</h2>
+                    <button class="btn-primary" id="createRoutineBtn">+ Nueva Rutina</button>
+                </div>
+
+                <div id="routinesList" class="routines-list">
+                    <!-- Routines will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Exercises Library Tab -->
+            <div class="tab-content" id="exercises-tab">
+                <div class="section-header">
+                    <h2>Biblioteca de Ejercicios</h2>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="cardio">Cardio</button>
+                    <button class="filter-btn" data-filter="fuerza">Fuerza</button>
+                    <button class="filter-btn" data-filter="flexibilidad">Flexibilidad</button>
+                </div>
+
+                <div id="exercisesList" class="exercises-list">
+                    <!-- Exercises will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings-tab">
+                <div class="section-header">
+                    <h2>Configuración</h2>
+                </div>
+
+                <div class="settings-container">
+                    <div class="setting-card">
+                        <div class="setting-header">
+                            <h3>⏱️ Timers de Descanso</h3>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="restBetweenSets">Descanso entre series (segundos)</label>
+                            <div class="timer-input-group">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenSets', -10)">-10</button>
+                                <input type="number" id="restBetweenSets" class="timer-input" value="60" min="0" max="300">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenSets', 10)">+10</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="restBetweenExercises">Descanso entre ejercicios (segundos)</label>
+                            <div class="timer-input-group">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenExercises', -10)">-10</button>
+                                <input type="number" id="restBetweenExercises" class="timer-input" value="90" min="0" max="300">
+                                <button class="timer-btn" onclick="adjustTimer('restBetweenExercises', 10)">+10</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autoStartTimer" checked>
+                                Iniciar timer automáticamente al completar ejercicio
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="soundEnabled" checked>
+                                Activar sonido cuando termina el timer
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="voiceCountdownEnabled" checked>
+                                🔊 Cuenta regresiva de voz (últimos 5 segundos)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Creating Routine -->
+    <div id="routineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Rutina</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="routineName">Nombre de la Rutina</label>
+                    <input type="text" id="routineName" placeholder="Ej: Entrenamiento Completo" class="input-field">
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="tabataMode">
+                        🔥 Modo Tabata (Intervalos de Alta Intensidad)
+                    </label>
+                </div>
+
+                <div id="tabataSettings" class="tabata-settings" style="display: none;">
+                    <div class="tabata-setting-row">
+                        <label for="tabataWork">Trabajo (segundos)</label>
+                        <input type="number" id="tabataWork" class="tabata-input" value="20" min="5" max="60">
+                    </div>
+                    <div class="tabata-setting-row">
+                        <label for="tabataRest">Descanso (segundos)</label>
+                        <input type="number" id="tabataRest" class="tabata-input" value="10" min="5" max="60">
+                    </div>
+                    <div class="tabata-setting-row">
+                        <label for="tabataRounds">Rondas</label>
+                        <input type="number" id="tabataRounds" class="tabata-input" value="8" min="1" max="20">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Selecciona Ejercicios</label>
+                    <div id="exerciseSelector" class="exercise-selector">
+                        <!-- Exercise checkboxes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelRoutineBtn">Cancelar</button>
+                <button class="btn-primary" id="saveRoutineBtn">Guardar Rutina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Selecting Today's Routine -->
+    <div id="selectRoutineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Seleccionar Rutina para Hoy</h3>
+                <button class="close-btn" id="closeSelectModalBtn">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div id="routineSelector" class="routine-selector">
+                    <!-- Available routines will be loaded here -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelSelectBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer Modal -->
+    <div id="timerModal" class="modal timer-modal">
+        <div class="modal-content timer-modal-content">
+            <div class="timer-display-container">
+                <div class="timer-title" id="timerTitle">Descanso entre Series</div>
+                <div class="tabata-info" id="tabataInfo" style="display: none;">
+                    <div class="tabata-round">Ronda <span id="currentRound">1</span>/<span id="totalRounds">8</span></div>
+                    <div class="tabata-exercise" id="tabataExerciseName"></div>
+                </div>
+                <div class="timer-display" id="timerDisplay">00:60</div>
+                <div class="timer-progress-ring">
+                    <svg width="200" height="200">
+                        <circle cx="100" cy="100" r="90" class="timer-progress-bg"/>
+                        <circle cx="100" cy="100" r="90" class="timer-progress-bar" id="timerProgressBar"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-control-btn" id="pauseTimerBtn" onclick="pauseTimer()">
+                    <span id="pauseIcon">⏸️</span>
+                </button>
+                <button class="timer-control-btn" onclick="skipTimer()">⏭️ Saltar</button>
+                <button class="timer-control-btn danger" onclick="stopTimer()">⏹️ Detener</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+// Default Exercise Library
+const defaultExercises = [
+    // Cardio
+    { id: 1, name: 'Saltos de tijera', category: 'cardio', sets: '3', reps: '30', rest: '30s' },
+    { id: 2, name: 'Burpees', category: 'cardio', sets: '3', reps: '10', rest: '45s' },
+    { id: 3, name: 'Mountain Climbers', category: 'cardio', sets: '3', reps: '20', rest: '30s' },
+    { id: 4, name: 'Rodillas altas', category: 'cardio', sets: '3', reps: '30', rest: '30s' },
+    { id: 5, name: 'Correr en el lugar', category: 'cardio', sets: '1', reps: '5 min', rest: '-' },
+
+    // Fuerza
+    { id: 6, name: 'Flexiones', category: 'fuerza', sets: '3', reps: '12', rest: '60s' },
+    { id: 7, name: 'Sentadillas', category: 'fuerza', sets: '4', reps: '15', rest: '60s' },
+    { id: 8, name: 'Plancha', category: 'fuerza', sets: '3', reps: '45s', rest: '30s' },
+    { id: 9, name: 'Zancadas', category: 'fuerza', sets: '3', reps: '12', rest: '45s' },
+    { id: 10, name: 'Fondos de tríceps', category: 'fuerza', sets: '3', reps: '12', rest: '45s' },
+    { id: 11, name: 'Abdominales', category: 'fuerza', sets: '3', reps: '20', rest: '30s' },
+    { id: 12, name: 'Puente de glúteos', category: 'fuerza', sets: '3', reps: '15', rest: '45s' },
+    { id: 13, name: 'Plancha lateral', category: 'fuerza', sets: '3', reps: '30s', rest: '30s' },
+
+    // Flexibilidad
+    { id: 14, name: 'Estiramiento de cuádriceps', category: 'flexibilidad', sets: '2', reps: '30s', rest: '-' },
+    { id: 15, name: 'Estiramiento de isquiotibiales', category: 'flexibilidad', sets: '2', reps: '30s', rest: '-' },
+    { id: 16, name: 'Estiramiento de hombros', category: 'flexibilidad', sets: '2', reps: '30s', rest: '-' },
+    { id: 17, name: 'Rotación de tronco', category: 'flexibilidad', sets: '2', reps: '10', rest: '-' },
+    { id: 18, name: 'Gato-Vaca (yoga)', category: 'flexibilidad', sets: '2', reps: '10', rest: '-' },
+];
+
+// App State
+let state = {
+    exercises: [],
+    routines: [],
+    todayWorkout: null,
+    currentTab: 'today',
+    currentFilter: 'all',
+    completedExercises: [],
+    settings: {
+        restBetweenSets: 60,
+        restBetweenExercises: 90,
+        autoStartTimer: true,
+        soundEnabled: true,
+        voiceCountdownEnabled: true
+    }
+};
+
+// Timer State
+let timerState = {
+    intervalId: null,
+    remainingTime: 0,
+    totalTime: 0,
+    isPaused: false,
+    type: 'sets', // 'sets', 'exercises', or 'tabata'
+    countdownSpoken: new Set(), // Track which countdown numbers have been spoken
+    tabata: {
+        isTabata: false,
+        currentRound: 1,
+        totalRounds: 8,
+        workTime: 20,
+        restTime: 10,
+        isWorkPhase: true,
+        currentExerciseIndex: 0,
+        exercises: []
+    }
+};
+
+// Edit State
+let editState = {
+    isEditing: false,
+    routineId: null
+};
+
+// Guided Workout State
+let guidedState = {
+    isActive: false,
+    currentExerciseIndex: 0,
+    currentSet: 1,
+    exercises: [],
+    lastAnnouncement: null,
+    timeAnnouncementsSpoken: new Set(),
+    wakeLock: null
+};
+
+// Initialize App
+function initApp() {
+    loadFromStorage();
+    setupEventListeners();
+    loadSettings();
+    displayCurrentDate();
+    renderExercises();
+    renderRoutines();
+    renderTodayWorkout();
+}
+
+// Local Storage Functions
+function saveToStorage() {
+    localStorage.setItem('workoutApp', JSON.stringify(state));
+}
+
+function loadFromStorage() {
+    const saved = localStorage.getItem('workoutApp');
+    if (saved) {
+        try {
+            const loadedState = JSON.parse(saved);
+
+            // Merge loaded state with default state to preserve new properties
+            state = {
+                exercises: loadedState.exercises || [...defaultExercises],
+                routines: loadedState.routines || [],
+                todayWorkout: loadedState.todayWorkout || null,
+                currentTab: loadedState.currentTab || 'today',
+                currentFilter: loadedState.currentFilter || 'all',
+                completedExercises: loadedState.completedExercises || [],
+                settings: {
+                    restBetweenSets: loadedState.settings?.restBetweenSets || 60,
+                    restBetweenExercises: loadedState.settings?.restBetweenExercises || 90,
+                    autoStartTimer: loadedState.settings?.autoStartTimer !== undefined ? loadedState.settings.autoStartTimer : true,
+                    soundEnabled: loadedState.settings?.soundEnabled !== undefined ? loadedState.settings.soundEnabled : true,
+                    voiceCountdownEnabled: loadedState.settings?.voiceCountdownEnabled !== undefined ? loadedState.settings.voiceCountdownEnabled : true
+                }
+            };
+
+            console.log('Estado cargado:', state);
+            console.log('Rutinas encontradas:', state.routines.length);
+        } catch (e) {
+            console.error('Error cargando estado:', e);
+            state.exercises = [...defaultExercises];
+        }
+    } else {
+        state.exercises = [...defaultExercises];
+        console.log('No hay estado guardado, usando valores por defecto');
+    }
+}
+
+// Display Current Date
+function displayCurrentDate() {
+    const dateElement = document.getElementById('currentDate');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const today = new Date().toLocaleDateString('es-ES', options);
+    dateElement.textContent = today;
+}
+
+// Event Listeners Setup
+function setupEventListeners() {
+    // Tab Navigation
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => switchTab(button.dataset.tab));
+    });
+
+    // Filter Buttons
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => filterExercises(button.dataset.filter));
+    });
+
+    // Create Routine Modal
+    document.getElementById('createRoutineBtn').addEventListener('click', openCreateRoutineModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeCreateRoutineModal);
+    document.getElementById('cancelRoutineBtn').addEventListener('click', closeCreateRoutineModal);
+    document.getElementById('saveRoutineBtn').addEventListener('click', saveRoutine);
+
+    // Select Routine Modal
+    document.getElementById('selectRoutineBtn').addEventListener('click', openSelectRoutineModal);
+    document.getElementById('closeSelectModalBtn').addEventListener('click', closeSelectRoutineModal);
+    document.getElementById('cancelSelectBtn').addEventListener('click', closeSelectRoutineModal);
+
+    // Close modals when clicking outside
+    document.getElementById('routineModal').addEventListener('click', (e) => {
+        if (e.target.id === 'routineModal') closeCreateRoutineModal();
+    });
+    document.getElementById('selectRoutineModal').addEventListener('click', (e) => {
+        if (e.target.id === 'selectRoutineModal') closeSelectRoutineModal();
+    });
+}
+
+// Tab Navigation
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+
+    state.currentTab = tabName;
+}
+
+// Filter Exercises
+function filterExercises(filter) {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    state.currentFilter = filter;
+    renderExercises();
+}
+
+// Render Exercises
+function renderExercises() {
+    const container = document.getElementById('exercisesList');
+    const filtered = state.currentFilter === 'all'
+        ? state.exercises
+        : state.exercises.filter(ex => ex.category === state.currentFilter);
+
+    container.innerHTML = filtered.map(exercise => `
+        <div class="exercise-card">
+            <div class="exercise-card-header">
+                <div class="exercise-card-name">${exercise.name}</div>
+                <span class="exercise-category">${getCategoryLabel(exercise.category)}</span>
+            </div>
+            <div class="exercise-card-details">
+                ${exercise.sets} series × ${exercise.reps} reps | Descanso: ${exercise.rest}
+            </div>
+        </div>
+    `).join('');
+}
+
+function getCategoryLabel(category) {
+    const labels = {
+        'cardio': 'Cardio',
+        'fuerza': 'Fuerza',
+        'flexibilidad': 'Flexibilidad'
+    };
+    return labels[category] || category;
+}
+
+// Render Routines
+function renderRoutines() {
+    const container = document.getElementById('routinesList');
+
+    console.log('renderRoutines() llamado. Rutinas:', state.routines.length);
+    console.log('Contenedor encontrado:', container ? 'SÍ' : 'NO');
+
+    if (!container) {
+        console.error('No se encontró el contenedor de rutinas');
+        return;
+    }
+
+    if (state.routines.length === 0) {
+        console.log('No hay rutinas, mostrando estado vacío');
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>📝 No tienes rutinas creadas</p>
+                <p class="empty-state-hint">Crea tu primera rutina para comenzar</p>
+            </div>
+        `;
+        return;
+    }
+
+    console.log('Renderizando', state.routines.length, 'rutinas');
+    container.innerHTML = state.routines.map(routine => `
+        <div class="routine-card">
+            <div class="routine-name">
+                ${routine.name}
+                ${routine.tabata ? '<span class="tabata-badge">TABATA</span>' : ''}
+            </div>
+            <div class="routine-info">
+                <span>${routine.exercises.length} ejercicios</span>
+                ${routine.tabata ? `<span> | ${routine.tabata.workTime}s/${routine.tabata.restTime}s × ${routine.tabata.rounds} rondas</span>` : ''}
+            </div>
+            <div class="routine-actions">
+                <button class="action-btn use" onclick="useRoutineForToday(${routine.id})">
+                    Usar Hoy
+                </button>
+                <button class="action-btn edit" onclick="openEditRoutineModal(${routine.id})">
+                    ✏️ Editar
+                </button>
+                <button class="action-btn delete" onclick="deleteRoutine(${routine.id})">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Create Routine Modal
+function openCreateRoutineModal() {
+    const modal = document.getElementById('routineModal');
+    const selector = document.getElementById('exerciseSelector');
+
+    // Reset edit state
+    editState.isEditing = false;
+    editState.routineId = null;
+
+    // Update modal title
+    document.querySelector('#routineModal .modal-header h3').textContent = 'Nueva Rutina';
+
+    // Reset form
+    document.getElementById('routineName').value = '';
+    document.getElementById('tabataMode').checked = false;
+    document.getElementById('tabataSettings').style.display = 'none';
+    document.getElementById('tabataWork').value = 20;
+    document.getElementById('tabataRest').value = 10;
+    document.getElementById('tabataRounds').value = 8;
+
+    // Populate exercise checkboxes
+    selector.innerHTML = state.exercises.map(exercise => `
+        <div class="exercise-checkbox-item">
+            <input type="checkbox" id="ex-${exercise.id}" value="${exercise.id}">
+            <label for="ex-${exercise.id}">${exercise.name} (${getCategoryLabel(exercise.category)})</label>
+        </div>
+    `).join('');
+
+    // Setup Tabata mode toggle
+    const tabataCheckbox = document.getElementById('tabataMode');
+    const tabataSettings = document.getElementById('tabataSettings');
+
+    tabataCheckbox.addEventListener('change', function() {
+        tabataSettings.style.display = this.checked ? 'block' : 'none';
+    });
+
+    modal.classList.add('active');
+}
+
+// Edit Routine Modal
+function openEditRoutineModal(routineId) {
+    const routine = state.routines.find(r => r.id === routineId);
+    if (!routine) return;
+
+    const modal = document.getElementById('routineModal');
+    const selector = document.getElementById('exerciseSelector');
+
+    // Set edit state
+    editState.isEditing = true;
+    editState.routineId = routineId;
+
+    // Update modal title
+    document.querySelector('#routineModal .modal-header h3').textContent = 'Editar Rutina';
+
+    // Load routine data
+    document.getElementById('routineName').value = routine.name;
+
+    // Load Tabata configuration
+    if (routine.tabata) {
+        document.getElementById('tabataMode').checked = true;
+        document.getElementById('tabataSettings').style.display = 'block';
+        document.getElementById('tabataWork').value = routine.tabata.workTime;
+        document.getElementById('tabataRest').value = routine.tabata.restTime;
+        document.getElementById('tabataRounds').value = routine.tabata.rounds;
+    } else {
+        document.getElementById('tabataMode').checked = false;
+        document.getElementById('tabataSettings').style.display = 'none';
+    }
+
+    // Populate exercise checkboxes
+    selector.innerHTML = state.exercises.map(exercise => {
+        const isSelected = routine.exercises.includes(exercise.id);
+        return `
+            <div class="exercise-checkbox-item">
+                <input type="checkbox" id="ex-${exercise.id}" value="${exercise.id}" ${isSelected ? 'checked' : ''}>
+                <label for="ex-${exercise.id}">${exercise.name} (${getCategoryLabel(exercise.category)})</label>
+            </div>
+        `;
+    }).join('');
+
+    // Setup Tabata mode toggle
+    const tabataCheckbox = document.getElementById('tabataMode');
+    const tabataSettings = document.getElementById('tabataSettings');
+
+    tabataCheckbox.addEventListener('change', function() {
+        tabataSettings.style.display = this.checked ? 'block' : 'none';
+    });
+
+    modal.classList.add('active');
+}
+
+function closeCreateRoutineModal() {
+    document.getElementById('routineModal').classList.remove('active');
+    document.getElementById('routineName').value = '';
+    document.getElementById('tabataMode').checked = false;
+    document.getElementById('tabataSettings').style.display = 'none';
+    document.querySelectorAll('#exerciseSelector input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+}
+
+function saveRoutine() {
+    const name = document.getElementById('routineName').value.trim();
+    const selectedExercises = Array.from(
+        document.querySelectorAll('#exerciseSelector input[type="checkbox"]:checked')
+    ).map(cb => parseInt(cb.value));
+
+    const isTabata = document.getElementById('tabataMode').checked;
+
+    if (!name) {
+        alert('Por favor ingresa un nombre para la rutina');
+        return;
+    }
+
+    if (selectedExercises.length === 0) {
+        alert('Por favor selecciona al menos un ejercicio');
+        return;
+    }
+
+    if (editState.isEditing) {
+        // Edit existing routine
+        const routineIndex = state.routines.findIndex(r => r.id === editState.routineId);
+        if (routineIndex !== -1) {
+            const routine = {
+                id: editState.routineId, // Keep the same ID
+                name: name,
+                exercises: selectedExercises
+            };
+
+            // Add Tabata configuration if enabled
+            if (isTabata) {
+                routine.tabata = {
+                    enabled: true,
+                    workTime: parseInt(document.getElementById('tabataWork').value) || 20,
+                    restTime: parseInt(document.getElementById('tabataRest').value) || 10,
+                    rounds: parseInt(document.getElementById('tabataRounds').value) || 8
+                };
+            }
+
+            state.routines[routineIndex] = routine;
+
+            // Update today's workout if it's the same routine
+            if (state.todayWorkout && state.todayWorkout.id === editState.routineId) {
+                state.todayWorkout = routine;
+            }
+        }
+    } else {
+        // Create new routine
+        const routine = {
+            id: Date.now(),
+            name: name,
+            exercises: selectedExercises
+        };
+
+        // Add Tabata configuration if enabled
+        if (isTabata) {
+            routine.tabata = {
+                enabled: true,
+                workTime: parseInt(document.getElementById('tabataWork').value) || 20,
+                restTime: parseInt(document.getElementById('tabataRest').value) || 10,
+                rounds: parseInt(document.getElementById('tabataRounds').value) || 8
+            };
+        }
+
+        state.routines.push(routine);
+    }
+
+    saveToStorage();
+    renderRoutines();
+    renderTodayWorkout(); // Re-render in case we edited today's workout
+    closeCreateRoutineModal();
+}
+
+function deleteRoutine(id) {
+    if (confirm('¿Estás seguro de eliminar esta rutina?')) {
+        state.routines = state.routines.filter(r => r.id !== id);
+
+        // Clear today's workout if it was this routine
+        if (state.todayWorkout && state.todayWorkout.id === id) {
+            state.todayWorkout = null;
+            state.completedExercises = [];
+        }
+
+        saveToStorage();
+        renderRoutines();
+        renderTodayWorkout();
+    }
+}
+
+// Select Routine for Today Modal
+function openSelectRoutineModal() {
+    const modal = document.getElementById('selectRoutineModal');
+    const selector = document.getElementById('routineSelector');
+
+    if (state.routines.length === 0) {
+        alert('Primero debes crear una rutina');
+        return;
+    }
+
+    selector.innerHTML = state.routines.map(routine => `
+        <div class="routine-select-item" onclick="selectRoutineForToday(${routine.id})">
+            <div class="routine-select-name">${routine.name}</div>
+            <div class="routine-select-count">${routine.exercises.length} ejercicios</div>
+        </div>
+    `).join('');
+
+    modal.classList.add('active');
+}
+
+function closeSelectRoutineModal() {
+    document.getElementById('selectRoutineModal').classList.remove('active');
+}
+
+function selectRoutineForToday(routineId) {
+    const routine = state.routines.find(r => r.id === routineId);
+    if (routine) {
+        state.todayWorkout = routine;
+        state.completedExercises = [];
+        saveToStorage();
+        renderTodayWorkout();
+        closeSelectRoutineModal();
+
+        // Switch to today tab
+        document.querySelector('[data-tab="today"]').click();
+    }
+}
+
+function useRoutineForToday(routineId) {
+    selectRoutineForToday(routineId);
+}
+
+// Render Today's Workout
+function renderTodayWorkout() {
+    const container = document.getElementById('todayWorkout');
+    const statsContainer = document.getElementById('statsContainer');
+
+    if (!state.todayWorkout) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>📋 No hay rutina seleccionada para hoy</p>
+                <p class="empty-state-hint">Selecciona una rutina para comenzar</p>
+            </div>
+        `;
+        statsContainer.style.display = 'none';
+        return;
+    }
+
+    const workoutExercises = state.todayWorkout.exercises.map(exId =>
+        state.exercises.find(ex => ex.id === exId)
+    ).filter(ex => ex !== undefined);
+
+    // Show Tabata start button if it's a Tabata workout
+    if (state.todayWorkout.tabata) {
+        const tabata = state.todayWorkout.tabata;
+        container.innerHTML = `
+            <div class="tabata-workout-card">
+                <div class="tabata-workout-header">
+                    <h3>🔥 Entrenamiento Tabata</h3>
+                    <span class="tabata-badge">HIIT</span>
+                </div>
+                <div class="tabata-workout-info">
+                    <div class="tabata-detail">
+                        <strong>${tabata.workTime}s</strong> Trabajo
+                    </div>
+                    <div class="tabata-detail">
+                        <strong>${tabata.restTime}s</strong> Descanso
+                    </div>
+                    <div class="tabata-detail">
+                        <strong>${tabata.rounds}</strong> Rondas
+                    </div>
+                </div>
+                <div class="tabata-exercises-list">
+                    <h4>Ejercicios:</h4>
+                    ${workoutExercises.map(ex => `<div class="tabata-exercise-item">• ${ex.name}</div>`).join('')}
+                </div>
+                <button class="btn-primary start-tabata-btn" onclick="startTabataWorkout()" style="width: 100%; margin-top: 1rem; padding: 1.5rem;">
+                    🔥 Iniciar Entrenamiento Tabata
+                </button>
+            </div>
+        `;
+        statsContainer.style.display = 'grid';
+        updateStats(workoutExercises.length);
+        return;
+    }
+
+    // If in guided mode, show fullscreen workout interface
+    if (guidedState.isActive) {
+        const currentExercise = workoutExercises[guidedState.currentExerciseIndex];
+        const totalSets = parseInt(currentExercise.sets) || 1;
+        const isLastExercise = guidedState.currentExerciseIndex === workoutExercises.length - 1;
+        const isLastSet = guidedState.currentSet >= totalSets;
+
+        // Hide stats container during workout
+        statsContainer.style.display = 'none';
+
+        container.innerHTML = `
+            <div class="interval-timer-screen">
+                <div class="interval-timer-header">
+                    <button class="interval-stop-btn" onclick="stopGuidedWorkout()">⏹️</button>
+                    <div class="interval-progress-text">
+                        Ejercicio ${guidedState.currentExerciseIndex + 1}/${workoutExercises.length}
+                    </div>
+                </div>
+
+                <div class="interval-main-display">
+                    <div class="interval-exercise-name">${currentExercise.name}</div>
+
+                    <div class="interval-set-counter">
+                        <span class="interval-set-current">${guidedState.currentSet}</span>
+                        <span class="interval-set-divider">/</span>
+                        <span class="interval-set-total">${totalSets}</span>
+                    </div>
+
+                    <div class="interval-exercise-info">
+                        <div class="interval-info-badge">
+                            <span class="interval-info-value">${currentExercise.reps}</span>
+                            <span class="interval-info-label">REPS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interval-action-area">
+                    <button class="interval-complete-btn" onclick="completeCurrentSet()">
+                        ${isLastSet && isLastExercise ? '🎉 FINALIZAR' : isLastSet ? 'SIGUIENTE EJERCICIO' : '✓ SERIE COMPLETA'}
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Announce exercise with voice
+        announceCurrentExercise(currentExercise, guidedState.currentSet, totalSets);
+        return;
+    }
+
+    // Show start button and exercise list for normal workouts
+    const startButtonHtml = `
+        <button class="btn-primary" onclick="startGuidedWorkout()"
+                style="width: 100%; margin-bottom: 1.5rem; padding: 1.5rem; font-size: 1.1rem;">
+            ▶️ Iniciar Rutina Guiada
+        </button>
+    `;
+
+    container.innerHTML = startButtonHtml + workoutExercises.map((exercise, index) => {
+        const isCompleted = state.completedExercises.includes(exercise.id);
+        const isLast = index === workoutExercises.length - 1;
+        return `
+            <div class="exercise-item ${isCompleted ? 'completed' : ''}">
+                <div class="exercise-header">
+                    <div class="exercise-name">${exercise.name}</div>
+                </div>
+                <div class="exercise-details">
+                    <div class="exercise-detail">
+                        <span>📊</span>
+                        <span>${exercise.sets} series</span>
+                    </div>
+                    <div class="exercise-detail">
+                        <span>🔢</span>
+                        <span>${exercise.reps} reps</span>
+                    </div>
+                    <div class="exercise-detail">
+                        <span>⏱️</span>
+                        <span>${exercise.rest}</span>
+                    </div>
+                </div>
+                <div class="exercise-timer-controls">
+                    <button class="start-timer-btn" onclick="startRestTimer('sets')">
+                        ⏱️ Timer Series
+                    </button>
+                    ${!isLast ? `<button class="start-timer-btn" onclick="startRestTimer('exercises')">
+                        ⏱️ Timer Ejercicio
+                    </button>` : ''}
+                </div>
+                <button class="complete-btn ${isCompleted ? 'completed' : ''}"
+                        onclick="toggleExerciseComplete(${exercise.id})">
+                    ${isCompleted ? '✓ Completado' : 'Marcar como Completado'}
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    // Update stats
+    updateStats(workoutExercises.length);
+    statsContainer.style.display = 'grid';
+}
+
+function toggleExerciseComplete(exerciseId) {
+    const index = state.completedExercises.indexOf(exerciseId);
+
+    if (index === -1) {
+        state.completedExercises.push(exerciseId);
+    } else {
+        state.completedExercises.splice(index, 1);
+    }
+
+    saveToStorage();
+    renderTodayWorkout();
+}
+
+function updateStats(totalExercises) {
+    const completed = state.completedExercises.length;
+    const remaining = totalExercises - completed;
+
+    document.getElementById('completedCount').textContent = completed;
+    document.getElementById('remainingCount').textContent = remaining;
+}
+
+// ===== TIMER FUNCTIONS =====
+
+function startTimer(duration, type = 'sets') {
+    // Stop any existing timer
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+    }
+
+    timerState.totalTime = duration;
+    timerState.remainingTime = duration;
+    timerState.type = type;
+    timerState.isPaused = false;
+    timerState.countdownSpoken = new Set(); // Reset countdown tracking
+
+    // Update modal title
+    const title = type === 'sets' ? 'Descanso entre Series' : 'Descanso entre Ejercicios';
+    document.getElementById('timerTitle').textContent = title;
+
+    // Show timer modal
+    document.getElementById('timerModal').classList.add('active');
+
+    // Start countdown
+    updateTimerDisplay();
+    timerState.intervalId = setInterval(() => {
+        if (!timerState.isPaused) {
+            timerState.remainingTime--;
+
+            if (timerState.remainingTime <= 0) {
+                finishTimer();
+            } else {
+                updateTimerDisplay();
+            }
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timerState.remainingTime / 60);
+    const seconds = timerState.remainingTime % 60;
+    const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    document.getElementById('timerDisplay').textContent = display;
+
+    // Update progress ring
+    const progressBar = document.getElementById('timerProgressBar');
+    const progress = (timerState.remainingTime / timerState.totalTime) * 565.48;
+    progressBar.style.strokeDashoffset = 565.48 - progress;
+
+    // Change color based on time remaining
+    progressBar.classList.remove('warning', 'danger');
+    const percentRemaining = (timerState.remainingTime / timerState.totalTime) * 100;
+    if (percentRemaining <= 20) {
+        progressBar.classList.add('danger');
+    } else if (percentRemaining <= 50) {
+        progressBar.classList.add('warning');
+    }
+
+    // Voice countdown for last 5 seconds
+    if (state.settings.voiceCountdownEnabled && timerState.remainingTime > 0 && timerState.remainingTime <= 5) {
+        speakCountdown(timerState.remainingTime);
+    }
+
+    // Announce time remaining at intervals
+    if (timerState.type !== 'tabata') {
+        announceRestTime(timerState.remainingTime);
+    }
+}
+
+function pauseTimer() {
+    timerState.isPaused = !timerState.isPaused;
+    const pauseIcon = document.getElementById('pauseIcon');
+    pauseIcon.textContent = timerState.isPaused ? '▶️' : '⏸️';
+}
+
+function skipTimer() {
+    stopTimer();
+}
+
+function stopTimer() {
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+    }
+    document.getElementById('timerModal').classList.remove('active');
+    timerState.isPaused = false;
+    document.getElementById('pauseIcon').textContent = '⏸️';
+}
+
+function finishTimer() {
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+    }
+
+    // Play sound or vibrate if enabled
+    if (state.settings.soundEnabled) {
+        playTimerSound();
+        vibrateDevice();
+    }
+
+    // Update display to show 00:00
+    document.getElementById('timerDisplay').textContent = '00:00';
+
+    // Close modal after a short delay
+    setTimeout(() => {
+        stopTimer();
+        // Execute callback if exists (for guided workout)
+        if (typeof window.finishTimerCallback === 'function') {
+            window.finishTimerCallback();
+        }
+    }, 1500);
+}
+
+function playTimerSound() {
+    // Create a simple beep sound using Web Audio API
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function vibrateDevice() {
+    if ('vibrate' in navigator) {
+        navigator.vibrate([200, 100, 200]);
+    }
+}
+
+// Voice Countdown Function
+function speakCountdown(number) {
+    // Only speak if not already spoken for this countdown
+    if (timerState.countdownSpoken.has(number)) {
+        return;
+    }
+
+    // Mark as spoken
+    timerState.countdownSpoken.add(number);
+
+    // Use Web Speech API
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(number.toString());
+        utterance.lang = 'es-ES'; // Spanish
+        utterance.rate = 1.0; // Normal speed
+        utterance.pitch = 1.0; // Normal pitch
+        utterance.volume = 1.0; // Maximum volume
+
+        // Cancel any ongoing speech to ensure countdown is heard
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Voice Announcement Function
+function speak(text) {
+    if ('speechSynthesis' in window && state.settings.voiceCountdownEnabled) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Announce current exercise
+function announceCurrentExercise(exercise, currentSet, totalSets) {
+    if (!state.settings.voiceCountdownEnabled) return;
+
+    // Only announce once per set change
+    const announceKey = `${exercise.id}-${currentSet}`;
+    if (guidedState.lastAnnouncement === announceKey) return;
+    guidedState.lastAnnouncement = announceKey;
+
+    setTimeout(() => {
+        const announcement = `${exercise.name}. Serie ${currentSet} de ${totalSets}. ${exercise.reps} repeticiones. Comenzar.`;
+        speak(announcement);
+    }, 500);
+}
+
+// Announce rest time remaining
+function announceRestTime(seconds) {
+    if (seconds === 30) {
+        speak('30 segundos restantes');
+    } else if (seconds === 10) {
+        speak('10 segundos');
+    }
+}
+
+// Preparation Countdown Function
+function startPreparationCountdown(callback) {
+    let countdown = 5;
+
+    // Update modal title and show preparation message
+    document.getElementById('timerTitle').textContent = '¡Listos!';
+    document.getElementById('timerDisplay').textContent = countdown.toString();
+    document.getElementById('timerModal').classList.add('active');
+
+    // Apply preparation styling
+    const modalContent = document.querySelector('.timer-modal-content');
+    modalContent.classList.add('preparation-phase');
+
+    // Speak "Listos"
+    if (state.settings.voiceCountdownEnabled) {
+        speak('¡Listos!');
+    }
+
+    // Wait a moment before starting countdown
+    setTimeout(() => {
+        // Start countdown from 5 to 1
+        const countdownInterval = setInterval(() => {
+            if (countdown > 0) {
+                document.getElementById('timerDisplay').textContent = countdown.toString();
+
+                // Speak the number
+                if (state.settings.voiceCountdownEnabled) {
+                    speak(countdown.toString());
+                }
+
+                // Play beep sound
+                if (state.settings.soundEnabled) {
+                    playPreparationBeep(countdown);
+                }
+
+                countdown--;
+            } else {
+                clearInterval(countdownInterval);
+
+                // Say "Comenzar"
+                if (state.settings.voiceCountdownEnabled) {
+                    speak('¡Comenzar!');
+                }
+
+                // Play start sound
+                if (state.settings.soundEnabled) {
+                    playStartSound();
+                }
+
+                // Close modal
+                setTimeout(() => {
+                    document.getElementById('timerModal').classList.remove('active');
+                    modalContent.classList.remove('preparation-phase');
+
+                    // Execute callback
+                    if (callback) callback();
+                }, 1000);
+            }
+        }, 1000);
+    }, 1000);
+}
+
+function playPreparationBeep(countdown) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Higher frequency for countdown
+        oscillator.frequency.value = 600 + (countdown * 50);
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function playStartSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Play a triumphant chord
+        [800, 1000].forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+
+            const startTime = audioContext.currentTime + (i * 0.1);
+            gainNode.gain.setValueAtTime(0.3, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.4);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.4);
+        });
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function startRestTimer(type = 'sets') {
+    const duration = type === 'sets' ?
+        state.settings.restBetweenSets :
+        state.settings.restBetweenExercises;
+    startTimer(duration, type);
+}
+
+// ===== TABATA FUNCTIONS =====
+
+function startTabataWorkout() {
+    if (!state.todayWorkout || !state.todayWorkout.tabata) {
+        alert('Esta rutina no está configurada en modo Tabata');
+        return;
+    }
+
+    const tabataConfig = state.todayWorkout.tabata;
+    const workoutExercises = state.todayWorkout.exercises.map(exId =>
+        state.exercises.find(ex => ex.id === exId)
+    ).filter(ex => ex !== undefined);
+
+    // Reset tabata state
+    timerState.tabata = {
+        isTabata: true,
+        currentRound: 1,
+        totalRounds: tabataConfig.rounds,
+        workTime: tabataConfig.workTime,
+        restTime: tabataConfig.restTime,
+        isWorkPhase: true,
+        currentExerciseIndex: 0,
+        exercises: workoutExercises
+    };
+
+    startTabataInterval();
+}
+
+function startTabataInterval() {
+    const tabata = timerState.tabata;
+    const currentExercise = tabata.exercises[tabata.currentExerciseIndex];
+
+    if (!currentExercise) {
+        // Finished all exercises
+        finishTabataWorkout();
+        return;
+    }
+
+    // Set timer duration based on phase
+    const duration = tabata.isWorkPhase ? tabata.workTime : tabata.restTime;
+    const title = tabata.isWorkPhase ? '💪 ¡TRABAJA!' : '😮‍💨 Descansa';
+
+    // Update timer state
+    timerState.type = 'tabata';
+    timerState.totalTime = duration;
+    timerState.remainingTime = duration;
+    timerState.isPaused = false;
+    timerState.countdownSpoken = new Set(); // Reset countdown tracking
+
+    // Show tabata info
+    document.getElementById('tabataInfo').style.display = 'block';
+    document.getElementById('currentRound').textContent = tabata.currentRound;
+    document.getElementById('totalRounds').textContent = tabata.totalRounds;
+    document.getElementById('tabataExerciseName').textContent = currentExercise.name;
+    document.getElementById('timerTitle').textContent = title;
+
+    // Apply phase styling
+    const modalContent = document.querySelector('.timer-modal-content');
+    modalContent.classList.remove('work-phase', 'rest-phase');
+    modalContent.classList.add(tabata.isWorkPhase ? 'work-phase' : 'rest-phase');
+
+    // Show modal
+    document.getElementById('timerModal').classList.add('active');
+
+    // Start countdown
+    updateTimerDisplay();
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+    }
+
+    timerState.intervalId = setInterval(() => {
+        if (!timerState.isPaused) {
+            timerState.remainingTime--;
+
+            if (timerState.remainingTime <= 0) {
+                advanceTabataPhase();
+            } else {
+                updateTimerDisplay();
+            }
+        }
+    }, 1000);
+}
+
+function advanceTabataPhase() {
+    const tabata = timerState.tabata;
+
+    // Play sound
+    if (state.settings.soundEnabled) {
+        playTabataSound(tabata.isWorkPhase);
+        vibrateDevice();
+    }
+
+    if (tabata.isWorkPhase) {
+        // Just finished work, go to rest
+        tabata.isWorkPhase = false;
+    } else {
+        // Just finished rest, go to next round or exercise
+        tabata.isWorkPhase = true;
+        tabata.currentRound++;
+
+        // Check if we've completed all rounds for this exercise
+        if (tabata.currentRound > tabata.totalRounds) {
+            // Move to next exercise
+            tabata.currentExerciseIndex++;
+            tabata.currentRound = 1;
+
+            if (tabata.currentExerciseIndex >= tabata.exercises.length) {
+                // Finished all exercises
+                finishTabataWorkout();
+                return;
+            }
+        }
+    }
+
+    // Continue to next interval
+    startTabataInterval();
+}
+
+function playTabataSound(isWorkPhase) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Different sounds for work vs rest
+        oscillator.frequency.value = isWorkPhase ? 600 : 400;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+function finishTabataWorkout() {
+    if (timerState.intervalId) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+    }
+
+    // Show completion message
+    document.getElementById('timerTitle').textContent = '🎉 ¡Entrenamiento Completado!';
+    document.getElementById('timerDisplay').textContent = '✓';
+
+    if (state.settings.soundEnabled) {
+        // Victory sound
+        playVictorySound();
+        navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100]);
+    }
+
+    // Auto close after delay
+    setTimeout(() => {
+        stopTimer();
+        timerState.tabata.isTabata = false;
+
+        // Mark all exercises as completed
+        state.todayWorkout.exercises.forEach(exId => {
+            if (!state.completedExercises.includes(exId)) {
+                state.completedExercises.push(exId);
+            }
+        });
+        saveToStorage();
+        renderTodayWorkout();
+    }, 3000);
+}
+
+function playVictorySound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        [800, 1000, 1200].forEach((freq, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+
+            const startTime = audioContext.currentTime + (i * 0.2);
+            gainNode.gain.setValueAtTime(0.2, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.3);
+        });
+    } catch (e) {
+        console.log('Audio not supported');
+    }
+}
+
+// ===== WAKE LOCK FUNCTIONS =====
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            guidedState.wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock activado - pantalla permanecerá encendida');
+
+            // Re-request wake lock if it's released (e.g., user switches tabs)
+            guidedState.wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock liberado');
+            });
+        }
+    } catch (err) {
+        console.error('Error al activar Wake Lock:', err);
+    }
+}
+
+function releaseWakeLock() {
+    if (guidedState.wakeLock) {
+        guidedState.wakeLock.release()
+            .then(() => {
+                guidedState.wakeLock = null;
+                console.log('Wake Lock desactivado');
+            })
+            .catch(err => console.error('Error al desactivar Wake Lock:', err));
+    }
+}
+
+// ===== GUIDED WORKOUT FUNCTIONS =====
+
+function startGuidedWorkout() {
+    if (!state.todayWorkout) {
+        alert('No hay rutina seleccionada');
+        return;
+    }
+
+    const workoutExercises = state.todayWorkout.exercises.map(exId =>
+        state.exercises.find(ex => ex.id === exId)
+    ).filter(ex => ex !== undefined);
+
+    guidedState.isActive = true;
+    guidedState.currentExerciseIndex = 0;
+    guidedState.currentSet = 1;
+    guidedState.exercises = workoutExercises;
+
+    // Request wake lock to keep screen on
+    requestWakeLock();
+
+    // Start with preparation countdown
+    startPreparationCountdown(() => {
+        renderTodayWorkout();
+    });
+}
+
+function stopGuidedWorkout() {
+    if (confirm('¿Seguro que quieres detener la rutina guiada?')) {
+        guidedState.isActive = false;
+        guidedState.currentExerciseIndex = 0;
+        guidedState.currentSet = 1;
+        guidedState.exercises = [];
+        guidedState.lastAnnouncement = null;
+
+        // Release wake lock
+        releaseWakeLock();
+
+        renderTodayWorkout();
+    }
+}
+
+function completeCurrentSet() {
+    const currentExercise = guidedState.exercises[guidedState.currentExerciseIndex];
+    const totalSets = parseInt(currentExercise.sets) || 1;
+    const isLastExercise = guidedState.currentExerciseIndex === guidedState.exercises.length - 1;
+    const isLastSet = guidedState.currentSet >= totalSets;
+
+    if (isLastSet && isLastExercise) {
+        // Finish workout
+        finishGuidedWorkout();
+        return;
+    }
+
+    if (isLastSet) {
+        // Move to next exercise
+        // Mark current exercise as completed
+        if (!state.completedExercises.includes(currentExercise.id)) {
+            state.completedExercises.push(currentExercise.id);
+        }
+        saveToStorage();
+
+        // Start rest timer between exercises
+        guidedState.currentExerciseIndex++;
+        guidedState.currentSet = 1;
+
+        // Show rest timer, then continue
+        startGuidedRestTimer('exercises');
+    } else {
+        // Move to next set
+        guidedState.currentSet++;
+
+        // Show rest timer between sets, then continue
+        startGuidedRestTimer('sets');
+    }
+}
+
+function startGuidedRestTimer(type) {
+    const duration = type === 'sets' ?
+        state.settings.restBetweenSets :
+        state.settings.restBetweenExercises;
+
+    // Store the original finishTimer function
+    const originalFinishTimer = window.finishTimerCallback;
+
+    // Set callback to continue guided workout after timer
+    window.finishTimerCallback = () => {
+        window.finishTimerCallback = originalFinishTimer;
+
+        // If moving to a new exercise, show preparation countdown
+        if (type === 'exercises') {
+            startPreparationCountdown(() => {
+                renderTodayWorkout();
+            });
+        } else {
+            // Just continue with next set (no preparation needed)
+            renderTodayWorkout();
+        }
+    };
+
+    startTimer(duration, type);
+}
+
+function finishGuidedWorkout() {
+    // Mark all exercises as completed
+    guidedState.exercises.forEach(exercise => {
+        if (!state.completedExercises.includes(exercise.id)) {
+            state.completedExercises.push(exercise.id);
+        }
+    });
+    saveToStorage();
+
+    // Reset guided state
+    guidedState.isActive = false;
+    guidedState.currentExerciseIndex = 0;
+    guidedState.currentSet = 1;
+    guidedState.exercises = [];
+    guidedState.lastAnnouncement = null;
+
+    // Release wake lock
+    releaseWakeLock();
+
+    // Show completion message
+    if (state.settings.soundEnabled) {
+        playVictorySound();
+        navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100]);
+    }
+
+    alert('🎉 ¡Felicitaciones! Has completado tu rutina');
+    renderTodayWorkout();
+}
+
+// ===== SETTINGS FUNCTIONS =====
+
+function adjustTimer(inputId, amount) {
+    const input = document.getElementById(inputId);
+    let value = parseInt(input.value) || 0;
+    value = Math.max(0, Math.min(300, value + amount));
+    input.value = value;
+
+    // Update state
+    if (inputId === 'restBetweenSets') {
+        state.settings.restBetweenSets = value;
+    } else if (inputId === 'restBetweenExercises') {
+        state.settings.restBetweenExercises = value;
+    }
+
+    saveToStorage();
+}
+
+function loadSettings() {
+    document.getElementById('restBetweenSets').value = state.settings.restBetweenSets;
+    document.getElementById('restBetweenExercises').value = state.settings.restBetweenExercises;
+    document.getElementById('autoStartTimer').checked = state.settings.autoStartTimer;
+    document.getElementById('soundEnabled').checked = state.settings.soundEnabled;
+    document.getElementById('voiceCountdownEnabled').checked = state.settings.voiceCountdownEnabled;
+
+    // Add event listeners for settings
+    document.getElementById('restBetweenSets').addEventListener('change', (e) => {
+        state.settings.restBetweenSets = parseInt(e.target.value) || 60;
+        saveToStorage();
+    });
+
+    document.getElementById('restBetweenExercises').addEventListener('change', (e) => {
+        state.settings.restBetweenExercises = parseInt(e.target.value) || 90;
+        saveToStorage();
+    });
+
+    document.getElementById('autoStartTimer').addEventListener('change', (e) => {
+        state.settings.autoStartTimer = e.target.checked;
+        saveToStorage();
+    });
+
+    document.getElementById('soundEnabled').addEventListener('change', (e) => {
+        state.settings.soundEnabled = e.target.checked;
+        saveToStorage();
+    });
+
+    document.getElementById('voiceCountdownEnabled').addEventListener('change', (e) => {
+        state.settings.voiceCountdownEnabled = e.target.checked;
+        saveToStorage();
+    });
+}
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
