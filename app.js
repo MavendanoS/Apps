@@ -95,9 +95,35 @@ function saveToStorage() {
 function loadFromStorage() {
     const saved = localStorage.getItem('workoutApp');
     if (saved) {
-        state = JSON.parse(saved);
+        try {
+            const loadedState = JSON.parse(saved);
+
+            // Merge loaded state with default state to preserve new properties
+            state = {
+                exercises: loadedState.exercises || [...defaultExercises],
+                routines: loadedState.routines || [],
+                todayWorkout: loadedState.todayWorkout || null,
+                currentTab: loadedState.currentTab || 'today',
+                currentFilter: loadedState.currentFilter || 'all',
+                completedExercises: loadedState.completedExercises || [],
+                settings: {
+                    restBetweenSets: loadedState.settings?.restBetweenSets || 60,
+                    restBetweenExercises: loadedState.settings?.restBetweenExercises || 90,
+                    autoStartTimer: loadedState.settings?.autoStartTimer !== undefined ? loadedState.settings.autoStartTimer : true,
+                    soundEnabled: loadedState.settings?.soundEnabled !== undefined ? loadedState.settings.soundEnabled : true,
+                    voiceCountdownEnabled: loadedState.settings?.voiceCountdownEnabled !== undefined ? loadedState.settings.voiceCountdownEnabled : true
+                }
+            };
+
+            console.log('Estado cargado:', state);
+            console.log('Rutinas encontradas:', state.routines.length);
+        } catch (e) {
+            console.error('Error cargando estado:', e);
+            state.exercises = [...defaultExercises];
+        }
     } else {
         state.exercises = [...defaultExercises];
+        console.log('No hay estado guardado, usando valores por defecto');
     }
 }
 
@@ -202,7 +228,16 @@ function getCategoryLabel(category) {
 function renderRoutines() {
     const container = document.getElementById('routinesList');
 
+    console.log('renderRoutines() llamado. Rutinas:', state.routines.length);
+    console.log('Contenedor encontrado:', container ? 'SÍ' : 'NO');
+
+    if (!container) {
+        console.error('No se encontró el contenedor de rutinas');
+        return;
+    }
+
     if (state.routines.length === 0) {
+        console.log('No hay rutinas, mostrando estado vacío');
         container.innerHTML = `
             <div class="empty-state">
                 <p>📝 No tienes rutinas creadas</p>
@@ -212,6 +247,7 @@ function renderRoutines() {
         return;
     }
 
+    console.log('Renderizando', state.routines.length, 'rutinas');
     container.innerHTML = state.routines.map(routine => `
         <div class="routine-card">
             <div class="routine-name">
