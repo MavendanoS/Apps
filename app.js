@@ -88,6 +88,20 @@ function initApp() {
     renderExercises();
     renderRoutines();
     renderTodayWorkout();
+    registerServiceWorker();
+}
+
+// Register Service Worker for PWA
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('Service Worker registrado:', registration);
+            })
+            .catch((error) => {
+                console.log('Error al registrar Service Worker:', error);
+            });
+    }
 }
 
 // Local Storage Functions

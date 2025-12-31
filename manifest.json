@@ -1,0 +1,20 @@
+{
+  "name": "Mi Entrenamiento en Casa",
+  "short_name": "Entrenamiento",
+  "description": "App de entrenamiento con temporizador de intervalos estilo profesional",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2ecc71",
+  "theme_color": "#27ae60",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E💪%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "sports"],
+  "screenshots": []
+}
