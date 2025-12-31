@@ -1159,3 +1159,192 @@ body {
     transform: scale(0.98);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* Interval Timer Screen - Professional Fullscreen Design */
+.interval-timer-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    color: white;
+}
+
+.interval-timer-header {
+    padding: 1.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.interval-stop-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    font-size: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.interval-stop-btn:active {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0.95);
+}
+
+.interval-progress-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.interval-main-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.interval-exercise-name {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.02em;
+    animation: fadeInScale 0.5s ease;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.interval-set-counter {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+}
+
+.interval-set-current {
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.interval-set-divider {
+    font-size: 4rem;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.interval-set-total {
+    font-size: 4rem;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+.interval-exercise-info {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.interval-info-badge {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.interval-info-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.interval-info-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.8;
+    letter-spacing: 0.1em;
+}
+
+.interval-action-area {
+    padding: 2rem 1.5rem;
+    padding-bottom: 3rem;
+}
+
+.interval-complete-btn {
+    width: 100%;
+    background: white;
+    color: #27ae60;
+    font-size: 1.5rem;
+    font-weight: 900;
+    padding: 1.8rem;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.02em;
+}
+
+.interval-complete-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 400px) {
+    .interval-exercise-name {
+        font-size: 2.2rem;
+    }
+
+    .interval-set-current {
+        font-size: 6rem;
+    }
+
+    .interval-set-divider,
+    .interval-set-total {
+        font-size: 3rem;
+    }
+
+    .interval-info-value {
+        font-size: 2rem;
+    }
+
+    .interval-complete-btn {
+        font-size: 1.3rem;
+        padding: 1.5rem;
+    }
+}

@@ -73,7 +73,10 @@ let guidedState = {
     isActive: false,
     currentExerciseIndex: 0,
     currentSet: 1,
-    exercises: []
+    exercises: [],
+    lastAnnouncement: null,
+    timeAnnouncementsSpoken: new Set(),
+    wakeLock: null
 };
 
 // Initialize App
@@ -558,49 +561,52 @@ function renderTodayWorkout() {
         return;
     }
 
-    // If in guided mode, show current exercise
+    // If in guided mode, show fullscreen workout interface
     if (guidedState.isActive) {
         const currentExercise = workoutExercises[guidedState.currentExerciseIndex];
         const totalSets = parseInt(currentExercise.sets) || 1;
         const isLastExercise = guidedState.currentExerciseIndex === workoutExercises.length - 1;
         const isLastSet = guidedState.currentSet >= totalSets;
 
+        // Hide stats container during workout
+        statsContainer.style.display = 'none';
+
         container.innerHTML = `
-            <div class="guided-workout-container">
-                <div class="guided-header">
-                    <h2>▶️ Modo Guiado</h2>
-                    <button class="btn-secondary" onclick="stopGuidedWorkout()" style="padding: 0.5rem 1rem;">
-                        ⏹️ Detener
-                    </button>
-                </div>
-                <div class="guided-progress">
-                    Ejercicio ${guidedState.currentExerciseIndex + 1}/${workoutExercises.length}
-                </div>
-                <div class="guided-exercise-card">
-                    <div class="guided-exercise-name">${currentExercise.name}</div>
-                    <div class="guided-set-info">
-                        <span class="guided-set-current">Serie ${guidedState.currentSet}</span>
-                        <span class="guided-set-total">de ${totalSets}</span>
+            <div class="interval-timer-screen">
+                <div class="interval-timer-header">
+                    <button class="interval-stop-btn" onclick="stopGuidedWorkout()">⏹️</button>
+                    <div class="interval-progress-text">
+                        Ejercicio ${guidedState.currentExerciseIndex + 1}/${workoutExercises.length}
                     </div>
-                    <div class="guided-exercise-details">
-                        <div class="guided-detail-item">
-                            <span class="guided-detail-icon">🔢</span>
-                            <span class="guided-detail-text">${currentExercise.reps} repeticiones</span>
-                        </div>
-                        <div class="guided-detail-item">
-                            <span class="guided-detail-icon">⏱️</span>
-                            <span class="guided-detail-text">Descanso: ${currentExercise.rest}</span>
+                </div>
+
+                <div class="interval-main-display">
+                    <div class="interval-exercise-name">${currentExercise.name}</div>
+
+                    <div class="interval-set-counter">
+                        <span class="interval-set-current">${guidedState.currentSet}</span>
+                        <span class="interval-set-divider">/</span>
+                        <span class="interval-set-total">${totalSets}</span>
+                    </div>
+
+                    <div class="interval-exercise-info">
+                        <div class="interval-info-badge">
+                            <span class="interval-info-value">${currentExercise.reps}</span>
+                            <span class="interval-info-label">REPS</span>
                         </div>
                     </div>
-                    <button class="btn-primary" onclick="completeCurrentSet()"
-                            style="width: 100%; padding: 1.5rem; margin-top: 2rem; font-size: 1.2rem;">
-                        ${isLastSet && isLastExercise ? '🎉 Finalizar Rutina' : isLastSet ? '➡️ Siguiente Ejercicio' : '✓ Serie Completada'}
+                </div>
+
+                <div class="interval-action-area">
+                    <button class="interval-complete-btn" onclick="completeCurrentSet()">
+                        ${isLastSet && isLastExercise ? '🎉 FINALIZAR' : isLastSet ? 'SIGUIENTE EJERCICIO' : '✓ SERIE COMPLETA'}
                     </button>
                 </div>
             </div>
         `;
-        statsContainer.style.display = 'grid';
-        updateStats(workoutExercises.length);
+
+        // Announce exercise with voice
+        announceCurrentExercise(currentExercise, guidedState.currentSet, totalSets);
         return;
     }
 
@@ -737,6 +743,11 @@ function updateTimerDisplay() {
     if (state.settings.voiceCountdownEnabled && timerState.remainingTime > 0 && timerState.remainingTime <= 5) {
         speakCountdown(timerState.remainingTime);
     }
+
+    // Announce time remaining at intervals
+    if (timerState.type !== 'tabata') {
+        announceRestTime(timerState.remainingTime);
+    }
 }
 
 function pauseTimer() {
@@ -839,7 +850,7 @@ function speakCountdown(number) {
 
 // Voice Announcement Function
 function speak(text) {
-    if ('speechSynthesis' in window) {
+    if ('speechSynthesis' in window && state.settings.voiceCountdownEnabled) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-ES';
         utterance.rate = 1.0;
@@ -847,6 +858,30 @@ function speak(text) {
         utterance.volume = 1.0;
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Announce current exercise
+function announceCurrentExercise(exercise, currentSet, totalSets) {
+    if (!state.settings.voiceCountdownEnabled) return;
+
+    // Only announce once per set change
+    const announceKey = `${exercise.id}-${currentSet}`;
+    if (guidedState.lastAnnouncement === announceKey) return;
+    guidedState.lastAnnouncement = announceKey;
+
+    setTimeout(() => {
+        const announcement = `${exercise.name}. Serie ${currentSet} de ${totalSets}. ${exercise.reps} repeticiones. Comenzar.`;
+        speak(announcement);
+    }, 500);
+}
+
+// Announce rest time remaining
+function announceRestTime(seconds) {
+    if (seconds === 30) {
+        speak('30 segundos restantes');
+    } else if (seconds === 10) {
+        speak('10 segundos');
     }
 }
 
@@ -1167,6 +1202,35 @@ function playVictorySound() {
     }
 }
 
+// ===== WAKE LOCK FUNCTIONS =====
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            guidedState.wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock activado - pantalla permanecerá encendida');
+
+            // Re-request wake lock if it's released (e.g., user switches tabs)
+            guidedState.wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock liberado');
+            });
+        }
+    } catch (err) {
+        console.error('Error al activar Wake Lock:', err);
+    }
+}
+
+function releaseWakeLock() {
+    if (guidedState.wakeLock) {
+        guidedState.wakeLock.release()
+            .then(() => {
+                guidedState.wakeLock = null;
+                console.log('Wake Lock desactivado');
+            })
+            .catch(err => console.error('Error al desactivar Wake Lock:', err));
+    }
+}
+
 // ===== GUIDED WORKOUT FUNCTIONS =====
 
 function startGuidedWorkout() {
@@ -1184,6 +1248,9 @@ function startGuidedWorkout() {
     guidedState.currentSet = 1;
     guidedState.exercises = workoutExercises;
 
+    // Request wake lock to keep screen on
+    requestWakeLock();
+
     // Start with preparation countdown
     startPreparationCountdown(() => {
         renderTodayWorkout();
@@ -1196,6 +1263,11 @@ function stopGuidedWorkout() {
         guidedState.currentExerciseIndex = 0;
         guidedState.currentSet = 1;
         guidedState.exercises = [];
+        guidedState.lastAnnouncement = null;
+
+        // Release wake lock
+        releaseWakeLock();
+
         renderTodayWorkout();
     }
 }
@@ -1275,6 +1347,10 @@ function finishGuidedWorkout() {
     guidedState.currentExerciseIndex = 0;
     guidedState.currentSet = 1;
     guidedState.exercises = [];
+    guidedState.lastAnnouncement = null;
+
+    // Release wake lock
+    releaseWakeLock();
 
     // Show completion message
     if (state.settings.soundEnabled) {
